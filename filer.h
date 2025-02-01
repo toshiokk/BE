@@ -24,6 +24,33 @@
 
 #ifdef ENABLE_FILER
 
+#define _FILE_SEL_NONE_	0x00	// file un-selected
+#define _FILE_SEL_MAN_	0x01	// file selected manually
+#define _FILE_SEL_AUTO_	0x02	// file selected automatically on execution of a command
+typedef struct {
+	char *file_name;
+						// | regular file | symlink               |
+						// |--------------|-----------------------|
+	struct stat lst;	// | file itself  | symlink               |
+	struct stat st;		// | file itself  | symlinked file or dir |
+	char *symlink;
+	char selected;
+} file_info_t;
+
+typedef struct {
+	char cur_dir[MAX_PATH_LEN+1];		// current directory
+	char filter[MAX_PATH_LEN+1];		// e.g. "*.h", "*.c", "": no filter
+	char listed_dir[MAX_PATH_LEN+1];	// directory from which file list gotten
+	int file_list_entries;
+	file_info_t *file_list_ptr;
+	int prev_file_idx;
+	int cur_file_idx;
+	int top_file_idx;
+	char prev_dir[MAX_PATH_LEN+1];		// previous current directory
+	char next_file[MAX_PATH_LEN+1];		// next file to be selected after changing dir
+										//  or after updating file list
+} filer_view_t;
+
 #define FILER_PANES		MAX_APP_PANES_2
 typedef struct {
 	char org_cur_dir[MAX_PATH_LEN+1];	// original current directory
@@ -34,12 +61,14 @@ extern filer_panes_t *cur_filer_panes;	// Current Filer Panes (instance is alloc
 extern ef_do_next_t filer_do_next;
 
 void set_cur_filer_panes(filer_panes_t *fps);
+filer_panes_t *get_cur_filer_panes();
 void init_cur_filer_panes(filer_panes_t *fps, const char *cur_dir);	// TODO: rename
 void destroy_filer_panes();
 void copy_filer_panes_cur_dir(filer_panes_t *dest, filer_panes_t *src);
 
-filer_view_t *get_cur_filer_cur_pane_view(void);
-filer_view_t *get_other_filer_view(void);
+filer_view_t *get_cur_filer_view(int pane_idx);
+filer_view_t *get_cur_filer_pane_view(void);
+filer_view_t *get_other_filer_pane_view(void);
 file_info_t *get_cur_fv_file_list_ptr();
 file_info_t *get_cur_fv_cur_file_ptr();
 file_info_t *get_cur_fv_file_ptr(int file_idx);

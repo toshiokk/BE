@@ -107,14 +107,16 @@ func_key_list_t editor_func_key_table[] = {
    {K_M_b,        KNA, KNA}, F_I(doe_last_line), get_str_setting_none },
  { EFAM_EXEC, "Go To Line",          "Go to specified line",
    {K_C_UNDLN,    KNA, KNA}, F_I(doe_goto_line), get_str_setting_none },
+#ifdef ENABLE_FILER
  { EFLM_EXEC, "ToDir",               "Goto directory",
    {K_F09, K_M_9, K_INS},    F_I(doe_goto_directory_in_cur_cursor_pos), get_str_setting_none },
  { EFLM_EXEC, "ToDir",               "Goto directory",
    {K_F10, K_M_0,      KNA}, F_I(doe_goto_directory_in_cur_line), get_str_setting_none },
+#endif // ENABLE_FILER
  { EFAM_EXEC, "TagJp",               "Tag-jump to file or directory",
-   {K_F11, K_M_J,      KNA}, F_I(doe_goto_file_or_dir_in_cur_cursor_pos), get_str_setting_none },
+   {K_F11, K_M_J,      KNA}, F_I(doe_tag_jump_in_cur_cursor_pos), get_str_setting_none },
  { EFAM_EXEC, "TagJp",               "Tag-jump to file or directory",
-   {K_F12, K_M_j,      KNA}, F_I(doe_goto_file_or_dir_in_cur_line), get_str_setting_none },
+   {K_F12, K_M_j,      KNA}, F_I(doe_tag_jump_in_cur_line), get_str_setting_none },
 
  { EFNM_EXEC, "",                    "Edit Menu",
    {KNA,          KNA, KNA}, F_I(doe_menu_0), get_str_setting_none },

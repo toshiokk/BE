@@ -1,7 +1,7 @@
 /**************************************************************************
  *   applvl.h                                                             *
  *                                                                        *
- *   Copyright (C) 1999-2003 Chris Allegretta                             *
+ *   Copyright (C) 2025-2025 PCR                                          *
  *                                                                        *
  *   This program is free software; you can redistribute it and/or modify *
  *   it under the terms of the GNU General Public License as published by *

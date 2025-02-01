@@ -26,6 +26,7 @@ typedef enum {
 	ITEM_COLOR_IDX_DEFAULT,				// default
 	ITEM_COLOR_IDX_TITLE,				// title bar
 	ITEM_COLOR_IDX_STATUS,				// status bar
+	ITEM_COLOR_IDX_PARENT,				// parent window
 	ITEM_COLOR_IDX_KEY_LIST,			// key list(key)
 	ITEM_COLOR_IDX_KEY_LIST2,			// key list(Description)
 	ITEM_COLOR_IDX_TEXT_NORMAL,			// contents

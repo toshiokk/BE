@@ -171,8 +171,7 @@ PRIVATE int dof_run_command_(int mode)
 	case 2:
 		expl = _("Run (with real-path)");
 		snprintf_(buf_s, MAX_PATH_LEN+1, "%s/%s",
-		 get_cur_filer_cur_pane_view()->cur_dir,
-		 get_cur_fv_cur_file_ptr()->file_name);
+		 get_cur_filer_pane_view()->cur_dir, get_cur_fv_cur_file_ptr()->file_name);
 		quote_file_path_buf(command_str, buf_s);
 		break;
 	case 3:
@@ -197,11 +196,9 @@ PRIVATE int dof_run_command_(int mode)
 			dst_fv_idx = 0;
 		}
 		snprintf_(buf_s, MAX_PATH_LEN+1, "%s/%s",
-		 cur_filer_panes->filer_views[src_fv_idx].cur_dir,
-		 get_cur_fv_cur_file_ptr()->file_name);
+		 get_cur_filer_view(src_fv_idx)->cur_dir, get_cur_fv_cur_file_ptr()->file_name);
 		snprintf_(buf_d, MAX_PATH_LEN+1, "%s/%s",
-		 cur_filer_panes->filer_views[dst_fv_idx].cur_dir,
-		 get_cur_fv_cur_file_ptr()->file_name);
+		 get_cur_filer_view(dst_fv_idx)->cur_dir, get_cur_fv_cur_file_ptr()->file_name);
 		snprintf_(command_str, MAX_PATH_LEN+1, " %s %s",
 		 quote_file_path_buf(buf1, buf_s),
 		 quote_file_path_buf(buf2, buf_d));

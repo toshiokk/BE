@@ -33,8 +33,6 @@ PRIVATE int load_file_from_history(const char *file_name);
 PRIVATE void goto_pos_by_history(const char *full_path);
 #endif // ENABLE_HISTORY
 
-PRIVATE const char *skip_n_file_names(const char *line, int field_idx);
-
 // "100" ==> column number
 int doe_goto_column(void)
 {
@@ -77,15 +75,15 @@ int doe_goto_line(void)
 	return 1;
 }
 
-// |function name                         |difference|
-// |--------------------------------------|----------|
-// |doe_goto_file_or_dir_in_cur_line      |jump to the file or directory gotten from line top  |
-// |doe_goto_file_or_dir_in_cur_cursor_pos|jump to the file or directory gotten from cursor pos|
+// |function name                 |difference|
+// |------------------------------|----------|
+// |doe_tag_jump_in_cur_line      |jump to the file or directory gotten from line top  |
+// |doe_tag_jump_in_cur_cursor_pos|jump to the file or directory gotten from cursor pos|
 
 PRIVATE int goto_file_in_cur_line_byte_idx(int line_byte_idx);
 
 // TAG JUMP (file_path is taken from the head of current line)
-int doe_goto_file_or_dir_in_cur_line(void)
+int doe_tag_jump_in_cur_line(void)
 {
 	if (goto_file_in_cur_line_byte_idx(0) >= 0) {
 		// files opened
@@ -99,7 +97,7 @@ int doe_goto_file_or_dir_in_cur_line(void)
 #endif // ENABLE_FILER
 }
 // TAG JUMP (file_path is taken from the current cursor position)
-int doe_goto_file_or_dir_in_cur_cursor_pos(void)
+int doe_tag_jump_in_cur_cursor_pos(void)
 {
 	if (goto_file_in_cur_line_byte_idx(EPCBVC_CLBI) >= 0) {
 		// files opened
@@ -118,10 +116,8 @@ int doe_goto_directory_in_cur_line()
 {
 	return try_to_open_dir_in_cur_line_with_filer(0);
 }
-
 int doe_goto_directory_in_cur_cursor_pos()
 {
-	// going to change directory
 	return try_to_open_dir_in_cur_line_with_filer(EPCBVC_CLBI);
 }
 #endif // ENABLE_FILER
@@ -268,19 +264,18 @@ int load_files_in_string(const char *string, int flags)
 PRIVATE int load_files_in_string_(const char *string, int flags)
 {
 	int files_loaded = -1;
-
 	for (int field_idx = 0; field_idx < MAX_FILES_TO_TRY_TO_LOAD_IN_A_LINE; field_idx++) {
-		char file_path[MAX_PATH_LEN+1];
-		if (get_n_th_file_line_col_from_str(string, field_idx,
-		 file_path, NULL, NULL) > 0) {
-			int files = load_file_in_string_(file_path, flags);
-			if (files >= 0) {
-				// once any file has loaded, show no more error message
-				files_loaded = LIM_MIN(0, files_loaded);
-				files_loaded += files;
-				flags &= ~OOE1;
-				flags &= ~MOE1;
-			}
+		const char* str = skip_n_file_names(string, field_idx);
+		if (*str == '\0') {
+			break;
+		}
+		int files = load_file_in_string_(str, flags);
+		if (files >= 0) {
+			// once any file has loaded, show no more error message
+			files_loaded = LIM_MIN(0, files_loaded);
+			files_loaded += files;
+			flags &= ~OOE1;
+			flags &= ~MOE1;
 		}
 	}
 	return files_loaded;
@@ -511,7 +506,6 @@ int is_file_name_proj_file(const char *file_name, int type)
 	return 0;	// not project file
 }
 
-#ifdef ENABLE_FILER
 #ifdef START_UP_TEST
 void test_get_n_th_file(void)
 {
@@ -561,15 +555,13 @@ int get_n_th_file_line_col_from_str(const char *str, int field_idx,
  char *file_path, int *line_num, int *col_num)
 {
 	strcpy__(file_path, "");
-	const char *ptr = skip_n_file_names(str, field_idx);
-	if (*ptr == '\0') {
+	str = skip_n_file_names(str, field_idx);
+	if (*str == '\0') {
 		return -1;		// end of line
 	}
-	return get_file_line_col_from_str(ptr, file_path, line_num, col_num);
+	return get_file_line_col_from_str(str, file_path, line_num, col_num);
 }
-#endif // ENABLE_FILER
-
-PRIVATE const char *skip_n_file_names(const char *line, int field_idx)
+const char *skip_n_file_names(const char *line, int field_idx)
 {
 	const char *ptr = line;
 	for (int field_cnt = 0; ; field_cnt++) {
@@ -844,12 +836,12 @@ int switch_epc_buf_to_another_buf(void)
 //  | 2 |'"filename".txt' (includes '"')                           | supported    | supported |
 //  | 3 |"file|name.txt"  (includes special chars [|'])            | supported    | supported |
 // workaround:
-//  |No.| command line      | file list                 | project file             |
-//  |---|-------------------|---------------------------|--------------------------|
-//  | 1 | " file name.txt " | " file name.txt ",100,10  | 100,10," file name.txt " |
-//  | 2 | "filename.txt"    | "\"filename.txt\"",100,10 | 100,10,"\"filename.txt\""|
-//  | 2 | "file|name.txt"   | "file|name.txt",100,10    | 100,10,"file|name.txt"   |
-//  | 2 | "file'name.txt"   | "file'name.txt",100,10    | 100,10,"file|name.txt"   |
+//  |No.| command line      | file list                 | project file       |
+//  |---|-------------------|---------------------------|--------------------|
+//  | 1 | " file name.txt " | " file name.txt ",100,10  | " file name.txt "  |
+//  | 2 | "filename.txt"    | "\"filename.txt\"",100,10 | "\"filename.txt\"" |
+//  | 3 | "file|name.txt"   | "file|name.txt",100,10    | "file|name.txt"    |
+//  | 3 | "file'name.txt"   | "file'name.txt",100,10    | "file'name.txt"    |
 
 #ifdef ENABLE_FILER
 int doe_filer(void)
@@ -858,7 +850,10 @@ int doe_filer(void)
 }
 int try_to_open_dir_in_cur_line_with_filer(int line_byte_idx)
 {
-	return try_to_open_dir_in_str_with_filer(&(EPCBVC_CL->data[line_byte_idx]));
+	if (try_to_open_dir_in_str_with_filer(&(EPCBVC_CL->data[line_byte_idx]))) {
+		editor_do_next = EF_CUR_DIR_CHANGED;
+	}
+	return 0;
 }
 int try_to_open_dir_in_str_with_filer(const char *str)
 {
@@ -870,7 +865,7 @@ int try_to_open_dir_in_str_with_filer(const char *str)
 	}
 	char file_path[MAX_PATH_LEN+1];
 	do_call_filer(1, APP_MODE_NORMAL, buf_dir, "", file_path, MAX_PATH_LEN);
-	disp_status_bar_done(_("Filer quited"));
+/////	disp_status_bar_done(_("Filer quited"));
 	return 1;
 }
 #endif // ENABLE_FILER

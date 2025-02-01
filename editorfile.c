@@ -244,7 +244,7 @@ int doe_write_file_to(void)
 	separate_path_to_dir_and_file(new_file_path, new_file_path, file_name);
 #ifdef ENABLE_FILER
 	// copy new file name to filer next_file
-	strlcpy__(get_cur_filer_cur_pane_view()->next_file, file_name, MAX_PATH_LEN);
+	strlcpy__(get_cur_filer_pane_view()->next_file, file_name, MAX_PATH_LEN);
 #endif // ENABLE_FILER
 	post_cmd_processing(NULL, CURS_MOVE_HORIZ, LOCATE_CURS_NONE, UPDATE_SCRN_ALL_SOON);
 	disp_status_bar_done(_("Written to the file: %s"), file_name);

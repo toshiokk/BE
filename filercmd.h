@@ -111,6 +111,7 @@ int dof_home_directory(void);
 int dof_root_directory(void);
 int dof_prev_directory(void);
 
+int dof_set_filter(void);
 int dof_select_file(void);
 int dof_select_no_file(void);
 int dof_select_all_files(void);

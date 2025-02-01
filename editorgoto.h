@@ -42,8 +42,8 @@
 
 int doe_goto_column(void);
 int doe_goto_line(void);
-int doe_goto_file_or_dir_in_cur_line(void);
-int doe_goto_file_or_dir_in_cur_cursor_pos(void);
+int doe_tag_jump_in_cur_line(void);
+int doe_tag_jump_in_cur_cursor_pos(void);
 #ifdef ENABLE_FILER
 int doe_goto_directory_in_cur_line();
 int doe_goto_directory_in_cur_cursor_pos();
@@ -83,14 +83,13 @@ int load_file_name_upp_low_(const char *file_name, int flags);
 
 int is_file_name_proj_file(const char *file_name, int type);
 
-#ifdef ENABLE_FILER
 #ifdef START_UP_TEST
 void test_get_n_th_file(void);
 #endif // START_UP_TEST
 #define MAX_FILES_TO_TRY_TO_LOAD_IN_A_LINE	10
 int get_n_th_file_line_col_from_str(const char *str, int field_idx,
  char *file_path, int *line_num, int *col_num);
-#endif // ENABLE_FILER
+const char *skip_n_file_names(const char *line, int field_idx);
 
 #ifdef ENABLE_HISTORY
 int goto_last_file_line_col_in_history();

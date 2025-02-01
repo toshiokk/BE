@@ -55,7 +55,7 @@ flf_d_printf("push_win:%d --> ret: %d\n", push_win, ret);
 	_mlc_check_count
 
 	if (push_win) {
-		// return setting newly loaded buffer as a current buffer
+		// return the current buffer settings of newly loaded buffer as a current
 		pop_app_win(ret == EF_LOADED);
 		update_screen_app(1, 1);
 	}
@@ -436,8 +436,8 @@ void push_app_win(editor_panes_t *next_eps, be_buf_t *buf)
 #ifdef ENABLE_FILER
 	if (next_fps) {
 		int cur_pane_idx = get_filer_cur_pane_idx();
-		filer_panes_t *prev_fps = cur_filer_panes;	// previous filer panes
-		app_win->filer_panes_save = cur_filer_panes;
+		filer_panes_t *prev_fps = get_cur_filer_panes();	// previous filer panes
+		app_win->filer_panes_save = get_cur_filer_panes();
 		init_cur_filer_panes(next_fps, prev_fps->filer_views[cur_pane_idx].cur_dir);
 	}
 #endif // ENABLE_FILER
@@ -464,11 +464,11 @@ mflf_d_printf("change_caller: %d\n", change_caller);
 #ifdef ENABLE_FILER
 	if (app_win->filer_panes_save) {
 		if (change_caller) {
-			copy_filer_panes_cur_dir(app_win->filer_panes_save, cur_filer_panes);
+			copy_filer_panes_cur_dir(app_win->filer_panes_save, get_cur_filer_panes());
 			// not recover (change) caller's current directory
 		} else {
 			// recover (not change) caller's current directory
-			////change_cur_dir(get_cur_filer_cur_pane_view()->cur_dir);
+change_cur_dir(get_cur_filer_pane_view()->cur_dir);
 		}
 		destroy_filer_panes();
 		set_cur_filer_panes(app_win->filer_panes_save);
@@ -484,8 +484,8 @@ void save_cur_app_state(int depth)
 		app_win->editor_panes_save = cur_editor_panes;
 	}
 #ifdef ENABLE_FILER
-	if (cur_filer_panes) {
-		app_win->filer_panes_save = cur_filer_panes;
+	if (get_cur_filer_panes()) {
+		app_win->filer_panes_save = get_cur_filer_panes();
 	}
 #endif // ENABLE_FILER
 }
@@ -518,9 +518,8 @@ void update_screen_app(int status_bar, int refresh)
 		if (depth >= cur_app_win_stack_depth) {
 			break;
 		}
-///		inc_win_depth();
-///		set_color_by_idx(ITEM_COLOR_IDX_DEFAULT, 0);
-		set_color_by_idx(ITEM_COLOR_IDX_MENU_ITEM, 0);
+/////		inc_win_depth();
+		set_color_by_idx(ITEM_COLOR_IDX_PARENT, 0);
 		main_win_clear_screen();		// draw dark frame
 		inc_win_depth();
 	}

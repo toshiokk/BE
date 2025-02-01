@@ -401,26 +401,24 @@ PRIVATE const char *get_1k_to_999k_str(long size, char *buf)
 //  100G -  999G
 
 //------------------------------------------------------------------------------
-int make_file_list(filer_view_t *fv, const char *filter)
+int make_file_list(filer_view_t *fv)
 {
 	char dir_save[MAX_PATH_LEN+1];
-	DIR *dir;
 	struct dirent *dirent;
-	char symlink[MAX_PATH_LEN+1];
-	file_info_t *ent_ptr;	// file entry
 	struct stat lst;
 	struct stat st;
-	int entries;
 	int file_idx;
 	int len;
 
+	const char *filter = fv->filter;
+	if (strcmp(filter, "") == 0) {
+		filter = "*";
+	}
 	change_cur_dir_after_save(dir_save, fv->cur_dir);
 
 	free_file_list(fv);
 
-	if (strcmp(filter, "") == 0) {
-		filter = "*";
-	}
+	DIR *dir;
 	if ((dir = opendir(fv->cur_dir)) == NULL) {
 		strcpy__(fv->listed_dir, "");
 		goto make_file_list_ret;
@@ -428,7 +426,7 @@ int make_file_list(filer_view_t *fv, const char *filter)
 	for (file_idx = 0; (dirent = readdir(dir)) != NULL; file_idx++) {
 		// count files
 	}
-	entries = file_idx;
+	int entries = file_idx;
 	_mlc_set_caller
 	fv->file_list_ptr = (file_info_t *)malloc__(sizeof(file_info_t) * entries);
 
@@ -451,7 +449,7 @@ int make_file_list(filer_view_t *fv, const char *filter)
 			  || ((st.st_mode & RWXRWXRWX) == RW0000RW0)))
 				// ".", ".????" or (mode == 000)
 				continue;
-			ent_ptr = &fv->file_list_ptr[file_idx];
+			file_info_t *ent_ptr = &fv->file_list_ptr[file_idx];
 			// fill file_info_t
 			_mlc_set_caller
 			ent_ptr->file_name = malloc_strcpy(dirent->d_name);
@@ -459,6 +457,7 @@ int make_file_list(filer_view_t *fv, const char *filter)
 			memcpy__(&ent_ptr->lst, &lst, sizeof(struct stat));
 			ent_ptr->symlink = NULL;
 			if (S_ISLNK(lst.st_mode)) {
+				char symlink[MAX_PATH_LEN+1];
 				if ((len = readlink__(dirent->d_name, symlink, MAX_PATH_LEN)) > 0) {
 					_mlc_set_caller
 					ent_ptr->symlink = malloc_strcpy(symlink);
@@ -693,7 +692,7 @@ PRIVATE int strtypecasecmp(const char *s1, const char *s2)
 //------------------------------------------------------------------------------
 int get_files_selected_cfv(void)
 {
-	return get_files_selected(get_cur_filer_cur_pane_view());
+	return get_files_selected(get_cur_filer_pane_view());
 }
 int get_files_selected(filer_view_t *fv)
 {
@@ -728,11 +727,11 @@ int get_first_file_idx_selected(void)
 {
 	int file_idx;
 
-	for (file_idx = 0; file_idx < get_cur_filer_cur_pane_view()->file_list_entries; file_idx++) {
+	for (file_idx = 0; file_idx < get_cur_filer_pane_view()->file_list_entries; file_idx++) {
 		if (get_cur_fv_file_ptr(file_idx)->selected)
 			break;
 	}
-	if (file_idx < get_cur_filer_cur_pane_view()->file_list_entries)
+	if (file_idx < get_cur_filer_pane_view()->file_list_entries)
 		return file_idx;
 	// no file selected, return current file
 	return get_cur_fv_file_idx();
@@ -741,17 +740,17 @@ int get_next_file_idx_selected(int file_idx)
 {
 	file_idx = file_idx < 0 ? 0 : file_idx+1;
 
-	for ( ; file_idx < get_cur_filer_cur_pane_view()->file_list_entries; file_idx++) {
+	for ( ; file_idx < get_cur_filer_pane_view()->file_list_entries; file_idx++) {
 		if (get_cur_fv_file_ptr(file_idx)->selected)
 			break;
 	}
-	if (file_idx < get_cur_filer_cur_pane_view()->file_list_entries)
+	if (file_idx < get_cur_filer_pane_view()->file_list_entries)
 		return file_idx;
 	return -1;	// no selected file found
 }
 void unselect_all_files_auto(char selection_bit)
 {
-	for (int file_idx = 0 ; file_idx < get_cur_filer_cur_pane_view()->file_list_entries;
+	for (int file_idx = 0 ; file_idx < get_cur_filer_pane_view()->file_list_entries;
 	 file_idx++) {
 		get_cur_fv_file_ptr(file_idx)->selected
 		 = get_cur_fv_file_ptr(file_idx)->selected & ~selection_bit;

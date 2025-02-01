@@ -73,12 +73,12 @@ flf_d_printf("dir: [%s]\n", dir);
 
 //------------------------------------------------------------------------------
 // comparison of change current dir functions
-// | func                                     |save before change|may change to parent|
-// |------------------------------------------|------------------|--------------------|
-// | change_cur_dir_by_file_path_after_save   | Yes              | Yes                |
-// | change_cur_dir_by_file_path              | No               | Yes                |
-// | change_cur_dir_after_save                | Yes              | No                 |
-// | change_cur_dir                           | No               | No                 |
+// | func                                   |save before change|try parent|
+// |----------------------------------------|------------------|----------|
+// | change_cur_dir_by_file_path_after_save | Yes              | Yes      |
+// | change_cur_dir_by_file_path            | No               | Yes      |
+// | change_cur_dir_after_save              | Yes              | No       |
+// | change_cur_dir                         | No               | No       |
 
 int change_cur_dir_by_file_path_after_save(char *dir_save, char *file_path)
 {

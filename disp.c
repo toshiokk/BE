@@ -92,6 +92,17 @@ void disp_status_bar_async(const char *msg, ...)
 	va_end(ap);
 }
 
+//| --          |                           next request                                     |
+//|prev. request|S_B_D_NONE|S_B_D_CURS|S_B_D_ING |S_B_D_WARN|S_B_D_ERR |S_B_D_DONE|S_B_D_ASYN|
+//|-------------|----------|----------|----------|----------|----------|----------|----------|
+//|S_B_D_NONE   | --       | overlap  | overlap  | overlap  | overlap  | overlap  | overlap  |
+//|S_B_D_CURS   | --       | overlap  | overlap  | overlap  | overlap  | overlap  | overlap  |
+//|S_B_D_ING    | --       | overlap  | overlap  | overlap  | overlap  | overlap  | overlap  |
+//|S_B_D_WARN   | --       |prev:next | reject   | overlap  | overlap  | overlap  | overlap  |
+//|S_B_D_ERR    | --       |prev:next | reject   | overlap  | overlap  | overlap  | overlap  |
+//|S_B_D_DONE   | --       |prev:next | reject   | overlap  | overlap  | overlap  | overlap  |
+//|S_B_D_ASYN   | --       | reject   | overlap  | overlap  | overlap  | overlap  | overlap  |
+
 // Examples:
 //  Reading File filename.ext ...
 //  Writing File filename.ext ...
@@ -114,7 +125,7 @@ PRIVATE void disp_status_bar_percent_va(s_b_d_t status_bar_to_display,
 #ifdef ENABLE_FILER
 	} else {
 		dividend = get_cur_fv_file_idx();
-		divisor = get_cur_filer_cur_pane_view()->file_list_entries;
+		divisor = get_cur_filer_pane_view()->file_list_entries;
 	}
 #endif // ENABLE_FILER
 
@@ -154,6 +165,7 @@ PRIVATE void disp_status_bar_percent_va(s_b_d_t status_bar_to_display,
 		default:
 		case S_B_D_CURS:
 			update = 0;		// no update
+			app_win->status_bar_displayed = status_bar_to_display;
 			break;
 		case S_B_D_ING:
 		case S_B_D_WARN:

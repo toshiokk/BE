@@ -24,39 +24,12 @@
 
 #ifdef ENABLE_FILER
 
-#define _FILE_SEL_NONE_	0x00	// file un-selected
-#define _FILE_SEL_MAN_	0x01	// file selected manually
-#define _FILE_SEL_AUTO_	0x02	// file selected automatically on execution of a command
-typedef struct {
-	char *file_name;
-						// | regular file | symlink               |
-						// |--------------|-----------------------|
-	struct stat lst;	// | file itself  | symlink               |
-	struct stat st;		// | file itself  | symlinked file or dir |
-	char *symlink;
-	char selected;
-} file_info_t;
-
-typedef struct {
-	char cur_dir[MAX_PATH_LEN+1];		// current directory
-	char listed_dir[MAX_PATH_LEN+1];	// directory from which file list gotten
-	int file_list_entries;
-	file_info_t *file_list_ptr;
-	int prev_file_idx;
-	int cur_file_idx;
-	int top_file_idx;
-	char prev_dir[MAX_PATH_LEN+1];		// previous current directory
-	char next_file[MAX_PATH_LEN+1];		// next file to be selected after changing dir
-										//  or after updating file list
-} filer_view_t;
-
-
 #ifdef START_UP_TEST
 void test_get_file_size_str(void);
 #endif // START_UP_TEST
 char *file_info_str(file_info_t *file_info, int show_link, int trunc_file_name, int selected);
 
-int make_file_list(filer_view_t *fv, const char *filter);
+int make_file_list(filer_view_t *fv);
 void free_file_list(filer_view_t *fv);
 
 void sort_file_list(filer_view_t *fv);

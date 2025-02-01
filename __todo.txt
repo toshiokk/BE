@@ -5,6 +5,19 @@
 - ISSUE: to be improved or fixed problems
 - CRASH: crash
 
+- [] open directory selecting from file open histotry "/file/opened.txt|1:2" in F09 and F10
+  - [] update the current directory in the caller
+[x] switching policy of filer and editor
+switching filer and editor
+  -+- call_filer -+- input_string() -+-- call_editor (view-mode)
+   |              |                  +-- call_filer (view-mode)
+   |              +- view_help()--call_editor (view-mode)
+   |
+   +- call_editor -+- input_string() -+-- call_editor (view-mode)
+                   |                  +-- call_filer (view-mode)
+                   +- view_help()--call_editor (view-mode)
+                   +- call_filer
+
 - [] regression test list
 // Editing functions:
 // | key    | filer function              | editor function           |filer|editor|
@@ -55,8 +68,8 @@ The seamless text copying:
 |file-history                   |dir Tag-jump      |change dir and open with filer |
 |dir-history                    |dir Tag-jump      |change dir and open with filer |
 
-- [] Too long time would be taken when you open missing files with project file
-- [] open directory selecting from file open histotry "/file/opened.txt|1:2" in F09 and F10
+- [x] file name filter
+- [x] Too long time would be taken when you open missing files with project file
 - [x] 250120 Does not show the function keys not available on the current state
 - [x] 250116 No new window size shown when beeing open input_str()
 - [x] How to manage discarded file lock (on BE-editor crash) ==> eof_open_locked_file()
@@ -314,17 +327,6 @@ The seamless text copying:
   |@E,@D,@C       |file path    |Insert        | input file path appending to previous string |
   |m              |cur dir path |Replace       | input dir path replacing previous string     |
   |@m             |cur dir path |Insert        | input dir path appending to previous string  |
-
-[x] switching policy of filer and editor
-switching filer and editor
-  -+- call_filer -+- input_string() +-- call_editor
-   |              |                 +-- call_filer
-   |              +- view_help() -- call_editor
-   |
-   +- call_editor -+- input_string() +-- call_editor
-                   |                 +-- call_filer
-                   +- view_help() -- call_editor
-                   +- call_filer
 
 [x] editor: stay in editor while `get_edit_bufs() > 0` and exit when `get_edit_bufs() == 0`
 
@@ -653,8 +655,8 @@ Editor 2 pane mode
 [ex]change current dir on start up
 [?x]Flash IMJ input line
 [dx]display ruler
-  12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
-  1---5----10---15---20---25---30---35---40---45---50---55---60---65---70---75---80---85---90---95---100--105
+12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+1---5----10---15---20---25---30---35---40---45---50---55---60---65---70---75---80---85---90---95---100--105
 [dx]non-bit-map-based setting variables
 [ex]history ==> buffer
 [dx]display line number
@@ -852,10 +854,10 @@ Change log -- n:neccesary,p:preferable,e:easy,d:difficult,a:always
 [x]Delete Monocrome mode
 [x] 8 colors ==> 16 colors
 
-[BUGS]------------------------------------------------------------------------------
+[BUGS]--------------------------------------------------------------------------
 //UTF8 directory/file name support
 
-[Crash/Fixes]-----------------------------------------------------------------------
+[Crash/Fixes]-------------------------------------------------------------------
 CFCFCFCFCFCFFF
 
 [Build and Running environments tested]
@@ -904,7 +906,7 @@ buffer.c     12345  rwxrwxrwx|buffer.c     12345  rwxrwxrwx
 	history buffer
 		history list
 
---------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 Function	command-line	   config-file	    command
 --------------	------------	   -----------	    -------
 rcfile			O		-		-
@@ -946,7 +948,7 @@ int main(void)
 }
 //--------------------------------
 
-[BUGS]------------------------------------------------------------------------------
+[BUGS]--------------------------------------------------------------------------
 //not return beginning position after replacing
 //ChDir to ..
 
@@ -959,7 +961,7 @@ int main(void)
 [pe]input from stdin
 //[pe]cursor positioning after reopening file
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 open/close(device)
 begin/end
@@ -971,7 +973,7 @@ clear/set(value)
 show/hide(window)
 start/terminate(process)
 
---------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 USB bootable Linux can be a killer application to Windose.
 USB からブート可能なOS(Linux)は、きっとWindoseに対するキラーアプリになる。
 

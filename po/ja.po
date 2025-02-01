@@ -621,12 +621,12 @@ msgstr "%d ファイルを削除予約にマークしますか ?"
 #: ../filercmd.c:574
 #, c-format
 msgid "Make size of file %s 0 ?"
-msgstr "ファイル %s を削除しますか ?"
+msgstr "ファイル %s をサイズ0にしますか ?"
 
 #: ../filercmd.c:577
 #, c-format
 msgid "Make size of %d files 0 ?"
-msgstr "%d ファイルを削除しますか ?"
+msgstr "%d ファイルをサイズ0にしますか ?"
 
 #: ../filercmd.c:610
 msgid "Find file:"
@@ -665,7 +665,7 @@ msgid "%d filesss selected"
 msgstr "%d ファイルを選択しました"
 
 #: ../filercmd.c:735
-msgid "Quit from filer"
+msgid "Quit filer"
 msgstr ""
 
 #. We can't open this dir for some reason. Complain.

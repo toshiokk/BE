@@ -118,6 +118,8 @@ func_key_list_t filer_func_key_table[] = {
    {K_C_T, K_M_t, K_HOME},   F_I(dof_top_of_list),  get_str_setting_none },
  { EFAM_EXEC, "Bottom",              "Bottom of list",
    {K_C_B, K_M_b, K_END},    F_I(dof_bottom_of_list), get_str_setting_none },
+ { EFAM_EXEC, "Set filter",          "Set file name filter",
+   {K_M_f,        KNA,  KNA}, F_I(dof_set_filter), get_str_setting_none },
  { EFAM_EXEC, "Select",              "Select file",
    {K_SP,         KNA, KNA}, F_I(dof_select_file),  get_str_setting_none },
  { EFAM_EXEC, "Select all",          "Select all files",
