@@ -548,9 +548,9 @@ msgstr "%d ファイルを読み込みました"
 msgid "Can not execute this function in filer List mode: [%s]"
 msgstr "このコマンドは List mode では実行できません: [%s]"
 
-#: ../filer2.c:330
+#: ../filerlist.c:330
 msgid " <<broken-link>>"
-msgstr " <<リンク切れ>>"
+msgstr ""
 
 #: ../filercmd.c:90
 msgid "File view refreshed"

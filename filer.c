@@ -23,10 +23,8 @@
 
 #ifdef ENABLE_FILER
 
-filer_panes_t *cur_filer_panes = NULL;		// Current Filer Panes
-
 PRIVATE void init_filer_view(filer_view_t *fv, const char *cur_dir);
-PRIVATE int get_other_filer_pane_idx(int filer_pane_idx);
+PRIVATE int get_another_filer_pane_idx(int filer_pane_idx);
 
 ef_do_next_t filer_do_next = EF_NONE;
 
@@ -45,7 +43,7 @@ void set_cur_filer_panes(filer_panes_t *fps)
 {
 	cur_filer_panes = fps;
 }
-filer_panes_t *get_cur_filer_panes()
+filer_panes_t* get_cur_filer_panes()
 {
 	return cur_filer_panes;
 }
@@ -53,11 +51,12 @@ void init_cur_filer_panes(filer_panes_t *fps, const char *cur_dir)
 {
 	filer_panes_t *prev_fps = get_cur_filer_panes();
 	set_cur_filer_panes(fps);
-	strlcpy__(get_cur_filer_panes()->org_cur_dir, cur_dir, MAX_PATH_LEN);
+/////	strlcpy__(get_cur_filer_panes()->org_cur_dir, cur_dir, MAX_PATH_LEN);
 	set_filer_cur_pane_idx(0);
 	for (int filer_pane_idx = 0; filer_pane_idx < FILER_PANES; filer_pane_idx++) {
 		// set initial value
-		init_filer_view(get_cur_filer_view(filer_pane_idx), get_cur_filer_panes()->org_cur_dir);
+/////	init_filer_view(get_cur_filer_view(filer_pane_idx), get_cur_filer_panes()->org_cur_dir);
+		init_filer_view(get_cur_filer_view(filer_pane_idx), cur_dir);
 		if (prev_fps) {
 			get_cur_filer_view(filer_pane_idx)->cur_file_idx =
 			 prev_fps->filer_views[filer_pane_idx].cur_file_idx;
@@ -80,6 +79,7 @@ void copy_filer_panes_cur_dir(filer_panes_t *dest, filer_panes_t *src)
 PRIVATE void init_filer_view(filer_view_t *fv, const char *cur_dir)
 {
 	memset(fv, 0x00, sizeof(*fv));
+	strlcpy__(fv->org_cur_dir, cur_dir, MAX_PATH_LEN);
 	strlcpy__(fv->cur_dir, cur_dir, MAX_PATH_LEN);
 	strcpy__(fv->filter, "");
 	strcpy__(fv->listed_dir, "");
@@ -102,14 +102,15 @@ filer_view_t *get_cur_filer_pane_view(void)
 {
 	return get_cur_filer_view(get_filer_cur_pane_idx());
 }
-filer_view_t *get_other_filer_pane_view(void)
+filer_view_t *get_another_filer_pane_view(void)
 {
-	return get_cur_filer_view(get_other_filer_pane_idx(get_filer_cur_pane_idx()));
+	return get_cur_filer_view(get_another_filer_pane_idx(get_filer_cur_pane_idx()));
 }
-PRIVATE int get_other_filer_pane_idx(int filer_pane_idx)
+PRIVATE int get_another_filer_pane_idx(int filer_pane_idx)
 {
 	return filer_pane_idx == 0 ? 1 : 0;
 }
+
 file_info_t *get_cur_fv_file_list_ptr()
 {
 	return get_cur_filer_pane_view()->file_list_ptr;
@@ -140,12 +141,12 @@ flf_d_printf("push: %d, list: %d, dir: %s, filter: [%s]\n", push_win, list_mode,
 #ifdef ENABLE_HISTORY
 	save_histories();
 #endif // ENABLE_HISTORY
-
 	strcpy__(path_buf, "");
-	filer_panes_t next_fps;
 
+	editor_panes_t next_eps;
+	filer_panes_t next_fps;
 	if (push_win) {
-		push_app_win(NULL, NULL, &next_fps);
+		push_app_win(&next_eps, NULL, &next_fps);
 	}
 
 	SET_APPMD_VAL(app_EDITOR_FILER, EF_FILER);
@@ -163,7 +164,8 @@ flf_d_printf("push_win:%d, list_mode:%d --> ret: %d\n", push_win, list_mode, ret
 
 	if (push_win) {
 		// propagate the current directory to the parent filer
-		pop_app_win(filer_do_next == EF_CUR_DIR_CHANGED);
+/////flf_d_printf("EF_CUR_DIR_CHANGED: %d\n", filer_do_next == EF_CUR_DIR_CHANGED);
+		pop_app_win(0, 1);		// always copy back the current directory to caller
 		disp_status_bar_done(_("Cur dir changed: %s"),
 		 get_cur_filer_view(get_filer_cur_pane_idx())->cur_dir);
 
@@ -285,7 +287,7 @@ flf_d_printf("filer_do_next: %d\n", filer_do_next);
 				break;
 			case EF_QUIT:
 			case EF_LOADED:
-			case EF_CUR_DIR_CHANGED:
+/////			case EF_CUR_DIR_CHANGED:
 				// quit from filer
 				break;
 			}
@@ -298,7 +300,7 @@ flf_d_printf("filer_do_next: %d\n", filer_do_next);
 			case EF_QUIT:
 			case EF_LOADED:
 			case EF_EXECUTED:
-			case EF_CUR_DIR_CHANGED:
+/////			case EF_CUR_DIR_CHANGED:
 				break;
 			case FL_ENTER_FILE_NAME_OR_PATH:
 				strcpy__(path_buf, "");
@@ -430,7 +432,7 @@ int update_screen_filer(int status_bar, int refresh)
 			// pane_sel_idx=0: update not current pane
 			// pane_sel_idx=1: update current pane
 			int pane_idx = (pane_sel_idx == 0)
-			 ? get_filer_counter_pane_idx()		// not current pane
+			 ? get_filer_another_pane_idx()		// not current pane
 			 : get_filer_cur_pane_idx();		// current pane
 			win_select_win(WIN_IDX_SUB_LEFT + pane_idx);
 			disp_file_list(get_cur_filer_view(pane_idx), pane_sel_idx);

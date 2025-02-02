@@ -42,7 +42,6 @@ void win_init_win_size(void)
 }
 void set_win_depth(int app_stack_depth)
 {
-/////	win_depth = app_stack_depth * 2;
 	win_depth = app_stack_depth;
 	win_reinit_win_size();
 }

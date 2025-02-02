@@ -5,17 +5,17 @@
 - ISSUE: to be improved or fixed problems
 - CRASH: crash
 
-- [] open directory selecting from file open histotry "/file/opened.txt|1:2" in F09 and F10
-  - [] update the current directory in the caller
+- [x] open directory selecting from file open histotry "/file/opened.txt|1:2" in F09 and F10
+  - [x] update the current directory in the caller
 [x] switching policy of filer and editor
 switching filer and editor
-  -+- call_filer -+- input_string() -+-- call_editor (view-mode)
+  -+- call_filer -+- input_string() -+-- call_editor (view-mode)--call_filer
    |              |                  +-- call_filer (view-mode)
-   |              +- view_help()--call_editor (view-mode)
+   |              +- view_list()--call_editor (view-mode)
    |
    +- call_editor -+- input_string() -+-- call_editor (view-mode)
                    |                  +-- call_filer (view-mode)
-                   +- view_help()--call_editor (view-mode)
+                   +- view_list()--call_editor (view-mode)
                    +- call_filer
 
 - [] regression test list

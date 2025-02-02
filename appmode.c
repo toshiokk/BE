@@ -323,7 +323,7 @@ const char *get_str_editor_panes(void)
 }
 int tog_editor_panex()
 {
-	return set_editor_cur_pane_idx(get_editor_counter_pane_idx());
+	return set_editor_cur_pane_idx(get_editor_another_pane_idx());
 }
 const char *get_str_editor_panex()
 {
@@ -400,7 +400,7 @@ const char *get_str_filer_panes(void)
 }
 int tog_filer_panex()
 {
-	return set_filer_cur_pane_idx(get_filer_counter_pane_idx());
+	return set_filer_cur_pane_idx(get_filer_another_pane_idx());
 }
 const char *get_str_filer_panex()
 {
@@ -581,7 +581,7 @@ int get_editor_cur_pane_idx(void)
 {
 	return GET_APPMD(ed_EDITOR_PANEX);
 }
-int get_editor_counter_pane_idx(void)
+int get_editor_another_pane_idx(void)
 {
 	return BOOL_INV(GET_APPMD(ed_EDITOR_PANEX));
 }
@@ -594,7 +594,7 @@ int get_filer_cur_pane_idx()
 {
 	return GET_APPMD(fl_FILER_PANEX);
 }
-int get_filer_counter_pane_idx()
+int get_filer_another_pane_idx()
 {
 	return BOOL_INV(GET_APPMD(fl_FILER_PANEX));
 }

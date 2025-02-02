@@ -29,7 +29,7 @@
 be_buf_t *push_undo_buf(be_buf_t *buf)
 {
 	buf = buf_create_copy(buf);
-	buf_view_copy(&(buf->buf_views[get_editor_counter_pane_idx()]),
+	buf_view_copy(&(buf->buf_views[get_editor_another_pane_idx()]),
 				 &(buf->buf_views[get_editor_cur_pane_idx()]));
 	snprintf(buf->file_path_, MAX_PATH_LEN, "#undo_buf-%02d", count_undo_bufs());
 	return buf_insert_after(UNDO_BUFS_TOP_ANCH, buf);

@@ -23,10 +23,6 @@
 
 #ifdef ENABLE_FILER
 
-PRIVATE int filer_change_dir_to_cur_sel(void);
-PRIVATE int filer_change_dir_if_not_yet(char *dir);
-PRIVATE int filer_change_dir_to_prev_dir(void);
-
 #define BEPAGER		"bepager"
 #define BETAIL		"betail"
 #define BETRASH		"betrash"
@@ -263,7 +259,7 @@ int dof_drop_files_to_open(void)
 int dof_copy_file(void)
 {
 	char file_path[MAX_PATH_LEN+1];
-	if (chk_inp_str_ret_val_filer(input_string_pos(get_other_filer_pane_view()->cur_dir,
+	if (chk_inp_str_ret_val_filer(input_string_pos(get_another_filer_pane_view()->cur_dir,
 	 file_path, MAX_PATH_LEN, HISTORY_TYPE_IDX_DIR,
 	 _("Copy to:")))) {
 		return 0;
@@ -290,7 +286,7 @@ int dof_copy_file(void)
 int dof_copy_file_update(void)
 {
 	char file_path[MAX_PATH_LEN+1];
-	if (chk_inp_str_ret_val_filer(input_string_pos(get_other_filer_pane_view()->cur_dir,
+	if (chk_inp_str_ret_val_filer(input_string_pos(get_another_filer_pane_view()->cur_dir,
 	 file_path, MAX_PATH_LEN, HISTORY_TYPE_IDX_DIR,
 	 _("Copy to (Update):")))) {
 		return 0;
@@ -322,7 +318,7 @@ int dof_drop_files_to_copy(void)
 int dof_move_file(void)
 {
 	char file_path[MAX_PATH_LEN+1];
-	if (chk_inp_str_ret_val_filer(input_string_pos(get_other_filer_pane_view()->cur_dir,
+	if (chk_inp_str_ret_val_filer(input_string_pos(get_another_filer_pane_view()->cur_dir,
 	 file_path, MAX_PATH_LEN, HISTORY_TYPE_IDX_DIR,
 	 _("Move to:")))) {
 		return 0;
@@ -654,7 +650,8 @@ int dof_parent_directory(void)
 }
 int dof_beginning_directory(void)
 {
-	return filer_change_dir_if_not_yet(get_cur_filer_panes()->org_cur_dir);
+/////	return filer_change_dir_if_not_yet(get_cur_filer_panes()->org_cur_dir);
+	return filer_change_dir_if_not_yet(get_cur_filer_pane_view()->org_cur_dir);
 }
 int dof_home_directory(void)
 {
@@ -841,163 +838,6 @@ int dof_menu_0(void)
 ///		return 0;
 ///	}
 	return filer_menu_n(-1);
-}
-
-//------------------------------------------------------------------------------
-
-#ifdef ENABLE_HISTORY
-PRIVATE int change_cur_dir_from_history(const char *dir);
-#endif // ENABLE_HISTORY
-
-int goto_dir_in_string(const char *str)
-{
-	char buf_dir[MAX_PATH_LEN+1];
-	if (check_to_change_dir_in_string(str, buf_dir)) {
-		change_cur_dir_by_file_path_after_save(buf_dir, get_epc_buf()->file_path_);
-#ifdef ENABLE_HISTORY
-		update_dir_history(get_cur_filer_pane_view()->prev_dir,
-		 get_cur_filer_pane_view()->cur_dir);
-#endif // ENABLE_HISTORY
-		return 1;
-	}
-	return 0;
-}
-int check_to_change_dir_in_string(const char *str, char* buf_dir)
-{
-	int changeable = 0;	// directory changeable
-	char dir_save[MAX_PATH_LEN+1];
-	get_full_path_of_cur_dir(dir_save);
-
-	for (int field_idx = 0; field_idx < MAX_FILES_TO_TRY_TO_LOAD_IN_A_LINE; field_idx++) {
-		if (get_n_th_file_line_col_from_str(str, field_idx, buf_dir, NULL, NULL) > 0) {
-			// directory gotten
-			if (try_to_chdir_parent(buf_dir)) {
-				// directory changeable
-				changeable = 1;
-				goto changeable;
-			}
-		}
-	}
-#ifdef ENABLE_HISTORY
-	for (int field_idx = 0; field_idx < MAX_FILES_TO_TRY_TO_LOAD_IN_A_LINE; field_idx++) {
-		if (get_n_th_file_line_col_from_str(str, field_idx, buf_dir, NULL, NULL) > 0) {
-			// directory gotten
-			if (change_cur_dir_from_history(buf_dir)) {
-				// directory changeable
-				changeable = 1;
-				goto changeable;
-			}
-		}
-	}
-#endif // ENABLE_HISTORY
-
-changeable:;
-	change_cur_dir(dir_save);
-	return changeable;	// changeable
-}
-
-int try_to_chdir_parent(char* buf_dir)
-{
-	if (change_cur_dir(buf_dir) == 0) {
-		return 1;
-	}
-	strip_file_from_path(buf_dir, NULL);
-	if (change_cur_dir(buf_dir) == 0) {
-		return 1;
-	}
-	return 0;
-}
-
-#ifdef ENABLE_HISTORY
-PRIVATE int change_cur_dir_from_history(const char *dir)
-{
-	set_history_newest(HISTORY_TYPE_IDX_DIR);
-	for ( ; ; ) {
-		const char *history = get_history_older(HISTORY_TYPE_IDX_DIR);
-		if (strlen_path(history) == 0) {
-			break;
-		}
-		if (compare_file_path_from_tail(history, dir) == 0) {
-			if (change_cur_dir_saving_prev_next(history)) {
-				return 1;
-			}
-		}
-	}
-	return 0;	// not changeable
-}
-#endif // ENABLE_HISTORY
-
-PRIVATE int filer_change_dir_to_cur_sel(void)
-{
-	if (S_ISDIR(get_cur_fv_cur_file_ptr()->st.st_mode)) {
-		if (filer_change_dir(get_cur_fv_cur_file_ptr()->file_name)) {
-			return 1;		// OK
-		}
-	}
-	return 0;			// error
-}
-PRIVATE int filer_change_dir_if_not_yet(char *dir)
-{
-	if (strcmp(get_cur_filer_pane_view()->cur_dir, dir) == 0) {
-		return filer_change_dir_to_prev_dir();
-	} else {
-		return filer_change_dir(dir);
-	}
-}
-PRIVATE int filer_change_dir_to_prev_dir(void)
-{
-	if (is_strlen_not_0(get_cur_filer_pane_view()->prev_dir)) {
-		return filer_change_dir(get_cur_filer_pane_view()->prev_dir);
-	}
-	return 0;		// error
-}
-
-// If can not change dir, try parent dir
-int filer_change_dir_parent(char *path)
-{
-	char dir[MAX_PATH_LEN+1];
-
-	strlcpy__(dir, path, MAX_PATH_LEN);
-	for ( ; ; ) {
-flf_d_printf("try to change dir to [%s]\n", dir);
-		if (strcmp(dir, "/") == 0) {
-			return 0;	// error
-		}
-		if (filer_change_dir(dir)) {
-			break;
-		}
-		// If can not change dir, try parent dir
-		// /try/to/change/dir/file ==> /try/to/change/dir
-		strip_file_from_path(dir, NULL);
-	}
-	return 1;	// changed
-}
-int filer_change_dir(char *dir)
-{
-	if (change_cur_dir_saving_prev_next(dir) == 0) {
-		// We can't open this dir for some reason. Complain.
-		disp_status_bar_err(_("Can not change current to [%s]: %s"),
-		 shrink_str_to_scr_static(dir), strerror(errno));
-		return 0;	// error
-	}
-#ifdef ENABLE_HISTORY
-	// previous dir, next dir
-	update_dir_history(get_cur_filer_pane_view()->prev_dir,
-	 get_cur_filer_pane_view()->cur_dir);
-#endif // ENABLE_HISTORY
-	get_cur_filer_pane_view()->top_file_idx = 0;
-	disp_status_bar_done(_("Changed current directory to [%s]"),
-	 shrink_str_to_scr_static(get_cur_filer_pane_view()->cur_dir));
-	filer_do_next = FL_UPDATE_FILE_LIST_FORCE;
-	return 1;		// OK
-}
-
-int change_cur_dir_saving_prev_next(const char *dir)
-{
-	return change_cur_dir_saving_prev_next_dir(dir,
-	 get_cur_filer_pane_view()->cur_dir,
-	 get_cur_filer_pane_view()->prev_dir,
-	 get_cur_filer_pane_view()->next_file);
 }
 
 #endif // ENABLE_FILER

@@ -195,6 +195,10 @@ void set_cur_editor_panes(editor_panes_t *editor_panes)
 {
 	cur_editor_panes = editor_panes;
 }
+editor_panes_t* get_cur_editor_panes()
+{
+	return cur_editor_panes;
+}
 void init_cur_editor_panes(editor_panes_t *eps, be_buf_t *buf)
 {
 	editor_panes_t *prev_eps = cur_editor_panes;	// save pointer
@@ -210,7 +214,7 @@ void init_cur_editor_panes(editor_panes_t *eps, be_buf_t *buf)
 		copy_editor_panes(cur_editor_panes, prev_eps);
 	}
 	if (buf) {
-		set_epx_buf(-1, buf);	// set only to the current pane
+		set_epx_buf(-1, buf);	// set a buffer only to the current pane
 	}
 }
 void destroy_editor_panes()

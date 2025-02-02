@@ -1,5 +1,5 @@
 /**************************************************************************
- *   filer2.h                                                             *
+ *   filerlist.h                                                          *
  *                                                                        *
  *   Copyright (C) 1999-2003 Chris Allegretta                             *
  *                                                                        *
@@ -19,10 +19,48 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef filer2_h
-#define filer2_h
+#ifndef filerlist_h
+#define filerlist_h
 
 #ifdef ENABLE_FILER
+
+#define _FILE_SEL_NONE_	0x00	// file un-selected
+#define _FILE_SEL_MAN_	0x01	// file selected manually
+#define _FILE_SEL_AUTO_	0x02	// file selected automatically on execution of a command
+typedef struct {
+	char *file_name;
+						// | regular file | symlink               |
+						// |--------------|-----------------------|
+	struct stat lst;	// | file itself  | symlink               |
+	struct stat st;		// | file itself  | symlinked file or dir |
+	char *symlink;
+	char selected;
+} file_info_t;
+
+typedef struct {
+	char org_cur_dir[MAX_PATH_LEN+1];	// original current directory
+	char cur_dir[MAX_PATH_LEN+1];		// current directory
+	char filter[MAX_PATH_LEN+1];		// e.g. "*.h", "*.c", "*.[hc], "": no filter
+	char listed_dir[MAX_PATH_LEN+1];	// directory from which file list gotten
+	int file_list_entries;
+	file_info_t *file_list_ptr;
+	int prev_file_idx;
+	int cur_file_idx;
+	int top_file_idx;
+	char prev_dir[MAX_PATH_LEN+1];		// previous current directory
+	char next_file[MAX_PATH_LEN+1];		// next file to be selected after changing dir
+										//  or after updating file list
+} filer_view_t;
+
+#define FILER_PANES		MAX_APP_PANES_2
+typedef struct {
+/////	char org_cur_dir[MAX_PATH_LEN+1];	// original current directory
+	filer_view_t filer_views[FILER_PANES];
+} filer_panes_t;
+
+extern filer_panes_t *cur_filer_panes;	// Current Filer Panes (instance is allocated locally)
+
+//------------------------------------------------------------------------------
 
 #ifdef START_UP_TEST
 void test_get_file_size_str(void);
@@ -49,6 +87,6 @@ int search_file_name_in_file_list(filer_view_t *fv, const char *file_name);
 
 #endif // ENABLE_FILER
 
-#endif // filer2_h
+#endif // filerlist_h
 
-// End of filer2.h
+// End of filerlist.h

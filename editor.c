@@ -32,10 +32,10 @@ int do_call_editor(int push_win, int list_mode, be_buf_t *buf, char *str_buf, in
 #endif // ENABLE_HISTORY
 
 	editor_panes_t next_eps;
-
+	filer_panes_t next_fps;
 	if (push_win) {
 #ifdef ENABLE_FILER
-		push_app_win(&next_eps, buf, NULL);
+		push_app_win(&next_eps, buf, &next_fps);
 #else // ENABLE_FILER
 		push_app_win(&next_eps, buf);
 #endif // ENABLE_FILER
@@ -56,7 +56,7 @@ flf_d_printf("push_win:%d --> ret: %d\n", push_win, ret);
 
 	if (push_win) {
 		// return the current buffer settings of newly loaded buffer as a current
-		pop_app_win(ret == EF_LOADED);
+		pop_app_win(ret == EF_LOADED, 1);
 		update_screen_app(1, 1);
 	}
 
@@ -403,7 +403,7 @@ int dec_app_win_stack_depth()
 	}
 	return cur_app_win_stack_depth;
 }
-app_win_stack_entry *get_app_win_stack_entry(int depth)
+app_win_stack_entry *get_app_win_stack_ptr(int depth)
 {
 	if (depth < 0) {
 		depth = cur_app_win_stack_depth;
@@ -412,9 +412,9 @@ app_win_stack_entry *get_app_win_stack_entry(int depth)
 }
 void clear_app_win_stack_entry(int depth)
 {
-	app_win_stack_entry *app_win = get_app_win_stack_entry(depth);
-	memset(app_win, 0x00, sizeof(*app_win));
-	app_win->status_bar_color_idx = ITEM_COLOR_IDX_STATUS;
+	app_win_stack_entry *app_win_stk_ptr = get_app_win_stack_ptr(depth);
+	memset(app_win_stk_ptr, 0x00, sizeof(*app_win_stk_ptr));
+	app_win_stk_ptr->status_bar_color_idx = ITEM_COLOR_IDX_STATUS;
 }
 
 #ifdef ENABLE_FILER
@@ -423,21 +423,21 @@ void push_app_win(editor_panes_t *next_eps, be_buf_t *buf, filer_panes_t *next_f
 void push_app_win(editor_panes_t *next_eps, be_buf_t *buf)
 #endif // ENABLE_FILER
 {
-	app_win_stack_entry *app_win = get_app_win_stack_entry(-1);
-	app_win->appmode_save = app_mode__;
-	app_win->editor_panes_save = NULL;
+	app_win_stack_entry *app_win_stk_ptr = get_app_win_stack_ptr(-1);
+	app_win_stk_ptr->appmode_save = app_mode__;
+	app_win_stk_ptr->editor_panes_save = NULL;
 #ifdef ENABLE_FILER
-	app_win->filer_panes_save = NULL;
+	app_win_stk_ptr->filer_panes_save = NULL;
 #endif // ENABLE_FILER
 	if (next_eps) {
-		app_win->editor_panes_save = cur_editor_panes;
+		app_win_stk_ptr->editor_panes_save = get_cur_editor_panes();
 		init_cur_editor_panes(next_eps, buf);
 	}
 #ifdef ENABLE_FILER
 	if (next_fps) {
 		int cur_pane_idx = get_filer_cur_pane_idx();
 		filer_panes_t *prev_fps = get_cur_filer_panes();	// previous filer panes
-		app_win->filer_panes_save = get_cur_filer_panes();
+		app_win_stk_ptr->filer_panes_save = get_cur_filer_panes();
 		init_cur_filer_panes(next_fps, prev_fps->filer_views[cur_pane_idx].cur_dir);
 	}
 #endif // ENABLE_FILER
@@ -446,60 +446,56 @@ void push_app_win(editor_panes_t *next_eps, be_buf_t *buf)
 	// clear previous message displayed on the status bar
 	clear_app_win_stack_entry(-1);
 }
-void pop_app_win(BOOL change_caller)
+void pop_app_win(BOOL change_parent_editor, BOOL change_parent_filer)
 {
-mflf_d_printf("change_caller: %d\n", change_caller);
 	set_win_depth(dec_app_win_stack_depth());
 
-	app_win_stack_entry *app_win = get_app_win_stack_entry(-1);
-	app_mode__ = app_win->appmode_save;
-	if (app_win->editor_panes_save) {
-		if (change_caller) {
+	app_win_stack_entry *app_win_stk_ptr = get_app_win_stack_ptr(-1);
+	app_mode__ = app_win_stk_ptr->appmode_save;
+	if (app_win_stk_ptr->editor_panes_save) {
+		if (change_parent_editor) {
 			// change caller's current file
-			copy_editor_panes(app_win->editor_panes_save, cur_editor_panes);
+			copy_editor_panes(app_win_stk_ptr->editor_panes_save, get_cur_editor_panes());
 		}
 		destroy_editor_panes();
-		set_cur_editor_panes(app_win->editor_panes_save);
+		set_cur_editor_panes(app_win_stk_ptr->editor_panes_save);
 	}
 #ifdef ENABLE_FILER
-	if (app_win->filer_panes_save) {
-		if (change_caller) {
-			copy_filer_panes_cur_dir(app_win->filer_panes_save, get_cur_filer_panes());
+	if (app_win_stk_ptr->filer_panes_save) {
+		if (change_parent_filer) {
+			copy_filer_panes_cur_dir(app_win_stk_ptr->filer_panes_save, get_cur_filer_panes());
 			// not recover (change) caller's current directory
-		} else {
-			// recover (not change) caller's current directory
-change_cur_dir(get_cur_filer_pane_view()->cur_dir);
 		}
 		destroy_filer_panes();
-		set_cur_filer_panes(app_win->filer_panes_save);
+		set_cur_filer_panes(app_win_stk_ptr->filer_panes_save);
 	}
 #endif // ENABLE_FILER
 }
 void save_cur_app_state(int depth)
 {
 	depth = MIN_MAX_(0, depth, MAX_APP_STACK_DEPTH);
-	app_win_stack_entry *app_win = get_app_win_stack_entry(depth);
-	app_win->appmode_save = app_mode__;
-	if (cur_editor_panes) {
-		app_win->editor_panes_save = cur_editor_panes;
+	app_win_stack_entry *app_win_stk_ptr = get_app_win_stack_ptr(depth);
+	app_win_stk_ptr->appmode_save = app_mode__;
+	if (get_cur_editor_panes()) {
+		app_win_stk_ptr->editor_panes_save = get_cur_editor_panes();
 	}
 #ifdef ENABLE_FILER
 	if (get_cur_filer_panes()) {
-		app_win->filer_panes_save = get_cur_filer_panes();
+		app_win_stk_ptr->filer_panes_save = get_cur_filer_panes();
 	}
 #endif // ENABLE_FILER
 }
 void load_cur_app_state(int depth)
 {
 	depth = MIN_MAX_(0, depth, MAX_APP_STACK_DEPTH);
-	app_win_stack_entry *app_win = get_app_win_stack_entry(depth);
-	app_mode__ = app_win->appmode_save;
-	if (app_win->editor_panes_save) {
-		set_cur_editor_panes(app_win->editor_panes_save);
+	app_win_stack_entry *app_win_stk_ptr = get_app_win_stack_ptr(depth);
+	app_mode__ = app_win_stk_ptr->appmode_save;
+	if (app_win_stk_ptr->editor_panes_save) {
+		set_cur_editor_panes(app_win_stk_ptr->editor_panes_save);
 	}
 #ifdef ENABLE_FILER
-	if (app_win->filer_panes_save) {
-		set_cur_filer_panes(app_win->filer_panes_save);
+	if (app_win_stk_ptr->filer_panes_save) {
+		set_cur_filer_panes(app_win_stk_ptr->filer_panes_save);
 	}
 #endif // ENABLE_FILER
 }
@@ -513,12 +509,10 @@ void update_screen_app(int status_bar, int refresh)
 		set_win_depth(depth);
 		set_app_win_stack_depth(depth);
 		load_cur_app_state(depth);
-
-		update_screen_app__(status_bar, refresh && (depth >= cur_app_win_stack_depth));
 		if (depth >= cur_app_win_stack_depth) {
+			update_screen_app__(status_bar, refresh && (depth >= cur_app_win_stack_depth));
 			break;
 		}
-/////		inc_win_depth();
 		set_color_by_idx(ITEM_COLOR_IDX_PARENT, 0);
 		main_win_clear_screen();		// draw dark frame
 		inc_win_depth();
@@ -568,7 +562,7 @@ void update_screen_editor(int status_bar, int refresh)
 			for (int pane_sel_idx = 0; pane_sel_idx < EDITOR_PANES; pane_sel_idx++) {
 				// pane_sel_idx=0: update not current pane
 				// pane_sel_idx=1: update current pane
-				int pane_idx = get_editor_counter_pane_idx();
+				int pane_idx = get_editor_another_pane_idx();
 				set_editor_cur_pane_idx(pane_idx);
 				win_select_win(WIN_IDX_SUB_LEFT + pane_idx);
 				disp_edit_win(pane_sel_idx);

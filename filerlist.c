@@ -1,5 +1,5 @@
 /**************************************************************************
- *   filer2.c                                                             *
+ *   filerlist.c                                                          *
  *                                                                        *
  *   Copyright (C) 1999-2003 Chris Allegretta                             *
  *                                                                        *
@@ -23,9 +23,11 @@
 
 #ifdef ENABLE_FILER
 
+filer_panes_t *cur_filer_panes = NULL;		// Current Filer Panes
+
 //------------------------------------------------------------------------------
 
-PRIVATE char *safe_file_name(const char *file_name);
+PRIVATE char *safe_file_name_str(const char *file_name);
 PRIVATE char *get_file_size_str(char *buf_size, loff_t size);
 PRIVATE const char *get_1k_to_999k_str(long size, char *buf);
 #ifdef START_UP_TEST
@@ -180,19 +182,19 @@ char *file_info_str(file_info_t *file_info, int show_link, int trunc_file_name, 
 	}
 	if (is_link) {
 		if (show_link) {
-			strlcat__(buf_name, MAX_PATH_LEN, safe_file_name(file_info->file_name));
+			strlcat__(buf_name, MAX_PATH_LEN, safe_file_name_str(file_info->file_name));
 #define LINK_ARROW		" -> "
 			strlcat__(buf_name, MAX_PATH_LEN, LINK_ARROW);
 			if (file_info->symlink)
-				strlcat__(buf_name, MAX_PATH_LEN, safe_file_name(file_info->symlink));
+				strlcat__(buf_name, MAX_PATH_LEN, safe_file_name_str(file_info->symlink));
 			if (is_link_broken)
 				strlcat__(buf_name, MAX_PATH_LEN, "!");
 		} else {
 			if (file_info->symlink)
-				strlcat__(buf_name, MAX_PATH_LEN, safe_file_name(file_info->symlink));
+				strlcat__(buf_name, MAX_PATH_LEN, safe_file_name_str(file_info->symlink));
 		}
 	} else {
-		strlcat__(buf_name, MAX_PATH_LEN, safe_file_name(file_info->file_name));
+		strlcat__(buf_name, MAX_PATH_LEN, safe_file_name_str(file_info->file_name));
 	}
 	if (S_ISDIR(st_ptr->st_mode)) {
 		strlcat__(buf_name, MAX_PATH_LEN, "/");
@@ -338,7 +340,7 @@ char *file_info_str(file_info_t *file_info, int show_link, int trunc_file_name, 
 // 0x01-0x1f, 0x7f ==> "%01"-"%1f", "%7f"
 // '%'             ==> "%%"
 // "abc\t\r\n^?def" ==> "abc%09%0D%0A%7Fdef"
-PRIVATE char *safe_file_name(const char *file_name)
+PRIVATE char *safe_file_name_str(const char *file_name)
 {
 	static char file_name_safe[MAX_PATH_LEN+1];
 	size_t len = strlen_path(file_name);
@@ -814,4 +816,4 @@ int search_file_name_in_file_list(filer_view_t *fv, const char *file_name)
 
 #endif // ENABLE_FILER
 
-// End of filer2.c
+// End of filerlist.c

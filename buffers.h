@@ -168,6 +168,7 @@ void line_avoid_wild_ptr(be_line_t **line_ptr, be_line_t *line);
 //------------------------------------------------------------------------------
 
 void set_cur_editor_panes(editor_panes_t *editor_panes);
+editor_panes_t* get_cur_editor_panes();
 void init_cur_editor_panes(editor_panes_t *eps, be_buf_t *buf);
 void destroy_editor_panes();
 void copy_editor_panes(editor_panes_t *dest, editor_panes_t *src);

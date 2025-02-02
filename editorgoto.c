@@ -91,7 +91,7 @@ int doe_tag_jump_in_cur_line(void)
 	}
 #ifdef ENABLE_FILER
 	// going to change directory
-	return try_to_open_dir_in_cur_line_with_filer(0);
+	return doe_goto_directory_in_cur_line();
 #else // ENABLE_FILER
 	return 0;
 #endif // ENABLE_FILER
@@ -105,7 +105,7 @@ int doe_tag_jump_in_cur_cursor_pos(void)
 	}
 #ifdef ENABLE_FILER
 	// going to change directory
-	return try_to_open_dir_in_cur_line_with_filer(EPCBVC_CLBI);
+	return doe_goto_directory_in_cur_cursor_pos();
 #else // ENABLE_FILER
 	return 0;
 #endif // ENABLE_FILER
@@ -150,7 +150,9 @@ int doe_open_files_in_buf(void)
 	post_cmd_processing(NULL, CURS_MOVE_HORIZ, LOCATE_CURS_NONE, UPDATE_SCRN_ALL_SOON);
 	return 0;
 }
+
 //------------------------------------------------------------------------------
+
 int doe_switch_to_top_buffer(void)
 {
 	if (switch_epc_buf_to_top() == 0) {
@@ -851,7 +853,8 @@ int doe_filer(void)
 int try_to_open_dir_in_cur_line_with_filer(int line_byte_idx)
 {
 	if (try_to_open_dir_in_str_with_filer(&(EPCBVC_CL->data[line_byte_idx]))) {
-		editor_do_next = EF_CUR_DIR_CHANGED;
+/////		filer_do_next = EF_CUR_DIR_CHANGED;
+/////flf_d_printf("set EF_CUR_DIR_CHANGED\n");
 	}
 	return 0;
 }

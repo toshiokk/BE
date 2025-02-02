@@ -1,5 +1,5 @@
 /**************************************************************************
- *   headers.h                                                            *
+ *   filerdir.h                                                           *
  *                                                                        *
  *   Copyright (C) 1999-2003 Chris Allegretta                             *
  *                                                                        *
@@ -19,53 +19,17 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef headers_h
-#define headers_h
+#ifndef filerdir_h
+#define filerdir_h
 
-#include "stdincs.h"
+#ifdef ENABLE_FILER
 
-#include "utilincs.h"
+int filer_change_dir_to_cur_sel(void);
+int filer_change_dir_if_not_yet(char *dir);
+int filer_change_dir_to_prev_dir(void);
 
-#include "appdefs.h"
-#include "appmode.h"
-#include "line.h"
-#include "buffer.h"
-#include "buffers.h"
-#include "regexp.h"
-#include "color.h"
-#include "sig.h"
-#include "keys.h"
-#include "menu.h"
-#include "tio.h"
-#include "fileio.h"
-#include "history.h"
-#include "keymacro.h"
-#include "rcfile.h"
-#include "search.h"
-#include "disp.h"
-#include "winout.h"
-#include "winin.h"
-#include "linewrap.h"
-#include "filerkeys.h"
-#include "filerrun.h"
-#include "filerdir.h"
-#include "filercmd.h"
-#include "filerlist.h"
-#include "filer.h"
-#include "editorundo.h"
-#include "editorkeys.h"
-#include "editormove2.h"
-#include "editormove.h"
-#include "editorgoto.h"
-#include "editorcut2.h"
-#include "editorcut.h"
-#include "editorlist.h"
-#include "editor3.h"
-#include "editor2.h"
-#include "editorfile.h"
-#include "editor.h"
-#include "main.h"
+#endif // ENABLE_FILER
 
-#endif // headers_h
+#endif // filerdir_h
 
-// End of headers.h
+// End of filerdir.h

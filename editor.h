@@ -80,7 +80,7 @@ void set_app_win_stack_depth(int depth);
 int inc_app_win_stack_depth();
 int dec_app_win_stack_depth();
 int get_app_win_stack_depth();
-app_win_stack_entry *get_app_win_stack_entry(int depth);
+app_win_stack_entry *get_app_win_stack_ptr(int depth);
 void clear_app_win_stack_entry(int depth);
 
 #ifdef ENABLE_FILER
@@ -88,7 +88,7 @@ void push_app_win(editor_panes_t *next_eps, be_buf_t *buf, filer_panes_t *next_f
 #else // ENABLE_FILER
 void push_app_win(editor_panes_t *next_eps, be_buf_t *buf);
 #endif // ENABLE_FILER
-void pop_app_win(BOOL change_caller);
+void pop_app_win(BOOL change_parent_editor, BOOL change_parent_filer);
 void save_cur_app_state(int depth);
 void load_cur_app_state(int depth);
 

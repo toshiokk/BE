@@ -302,11 +302,11 @@ inline char indication_of_app_mode()
 
 int set_editor_cur_pane_idx(int pane_idx);
 int get_editor_cur_pane_idx(void);
-int get_editor_counter_pane_idx(void);
+int get_editor_another_pane_idx(void);
 
 int set_filer_cur_pane_idx(int pane_idx);
 int get_filer_cur_pane_idx();
-int get_filer_counter_pane_idx();
+int get_filer_another_pane_idx();
 
 #endif // appmode_h
 
