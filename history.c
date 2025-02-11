@@ -119,7 +119,7 @@ PRIVATE be_buf_t *get_history_buf(int hist_type_idx)
 		e_printf("hist_type_idx out of range: %d", hist_type_idx);
 		hist_type_idx = 0;
 	}
-	return buf_get_buf_by_idx(HIST_BUFS_TOP_NODE, hist_type_idx);
+	return buf_get_buf_by_idx(HIST_BUFS_TOP_BUF, hist_type_idx);
 }
 
 void update_dir_history(const char *prev_dir, const char *cur_dir)
@@ -310,8 +310,7 @@ PRIVATE int load_history_idx(int hist_type_idx)
 				continue;
 			// load the last MAX_HISTORY_LINES lines
 			str[MAX_EDIT_LINE_LEN] = '\0';
-			remove_line_tail_lf(str);
-			append_history(hist_type_idx, str);
+			append_history(hist_type_idx, remove_line_tail_lf(str));
 		}
 		if (fclose(fp) != 0) {
 			error = 1;
@@ -569,11 +568,11 @@ void dump_history_ix(int hist_type_idx)
 }
 void dump_hist_bufs(void)
 {
-	buf_dump_bufs(HIST_BUFS_TOP_NODE);
+	buf_dump_bufs(HIST_BUFS_TOP_BUF);
 }
 void dump_hist_bufs_lines(void)
 {
-	buf_dump_bufs_lines(HIST_BUFS_TOP_NODE, "hist-bufs");
+	buf_dump_bufs_lines(HIST_BUFS_TOP_BUF, "hist-bufs");
 }
 #endif // ENABLE_DEBUG
 

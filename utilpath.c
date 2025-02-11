@@ -535,6 +535,7 @@ char *normalize_full_path(char *full_path)
 	normalize_full_path__(full_path, full_path, full_path);
 	remove_redundant_slash(full_path);
 	remove_last_slash(full_path);
+/////flf_d_printf("full_path: [%s]\n", full_path);
 	return full_path;
 }
 // "/dir1/../????"

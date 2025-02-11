@@ -591,7 +591,7 @@ void app_die_on(const char *msg)
 	e_printf("%s", msg);
 
 	// then save all of the modified buffers, if any
-	for (be_buf_t *buf = EDIT_BUFS_TOP_NODE; IS_NODE_INT(buf); buf = NODE_NEXT(buf)) {
+	for (be_buf_t *buf = EDIT_BUFS_TOP_BUF; IS_NODE_INT(buf); buf = NODE_NEXT(buf)) {
 		set_epc_buf(buf);
 		if (check_cur_buf_modified()) {
 			// save the file if it's been modified

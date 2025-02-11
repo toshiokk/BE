@@ -715,7 +715,7 @@ PRIVATE int search_needle_in_buffer(be_line_t **ptr_line, int *ptr_byte_idx,
 				} else if (IS_NODE_TOP_MOST(line) == 0) {
 					line = NODE_PREV(line);
 					byte_idx = line_strlen(line);
-				} else if (global_search && switch_epc_buf_to_prev(0, 0)) {
+				} else if (global_search && switch_epc_buf_to_prev_buf(0, 0)) {
 					// update local pointers after switching buffer
 					// but not update pointers in buffer
 					ptr_line = &(EPCBVC_CL);
@@ -746,7 +746,7 @@ PRIVATE int search_needle_in_buffer(be_line_t **ptr_line, int *ptr_byte_idx,
 				} else if (IS_NODE_BOT_MOST(line) == 0) {
 					line = NODE_NEXT(line);
 					byte_idx = 0;
-				} else if (global_search && switch_epc_buf_to_next(0, 0)) {
+				} else if (global_search && switch_epc_buf_to_next_buf(0, 0)) {
 					// update local pointers after switching buffer
 					// but not update pointers in buffer
 					ptr_line = &(EPCBVC_CL);

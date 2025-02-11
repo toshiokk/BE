@@ -50,10 +50,11 @@ int doe_goto_directory_in_cur_cursor_pos();
 #endif // ENABLE_FILER
 
 int doe_open_files_in_buf(void);
-int doe_switch_to_top_buffer(void);
-int doe_switch_to_bot_buffer(void);
 int doe_switch_to_prev_buffer(void);
 int doe_switch_to_next_buffer(void);
+int doe_switch_to_top_buffer(void);
+int doe_switch_to_bot_buffer(void);
+
 int doe_switch_to_prev_buffers(void);
 int doe_switch_to_next_buffers(void);
 
@@ -111,10 +112,10 @@ int get_file_line_col_from_str(const char *str, char *file_path,
 int switch_epc_buf_by_file_path(const char *abs_path);
 int switch_epc_buf_by_file_name(const char *file_name);
 
-int switch_epc_buf_to_top(void);
-int switch_epc_buf_to_bot(void);
-int switch_epc_buf_to_next(int beep_at_end, int goto_top);
-int switch_epc_buf_to_prev(int beep_at_end, int goto_bottom);
+int switch_epc_buf_to_top_buf(void);
+int switch_epc_buf_to_bot_buf(void);
+int switch_epc_buf_to_next_buf(int beep_at_end, int goto_top);
+int switch_epc_buf_to_prev_buf(int beep_at_end, int goto_bottom);
 int switch_epc_buf_to_another_buf(void);
 
 #ifdef ENABLE_FILER

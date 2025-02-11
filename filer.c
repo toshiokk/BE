@@ -33,7 +33,7 @@ PRIVATE int check_filer_cur_dir(void);
 PRIVATE int update_file_list_of_all_panes(int update_request);
 PRIVATE int update_file_list(filer_view_t *fv, int update_request);
 
-PRIVATE void disp_title_bar_filer(const char* path, const char* filter,
+PRIVATE void disp_title_bar_filer(const char* dir, const char* filter,
  int cur_idx, int files_selected, int files_total);
 PRIVATE int disp_file_list(filer_view_t *fv, int cur_pane);
 
@@ -146,7 +146,7 @@ flf_d_printf("push: %d, list: %d, dir: %s, filter: [%s]\n", push_win, list_mode,
 	editor_panes_t next_eps;
 	filer_panes_t next_fps;
 	if (push_win) {
-		push_app_win(&next_eps, NULL, &next_fps);
+		push_app_win_stk(&next_eps, NULL, &next_fps);
 	}
 
 	SET_APPMD_VAL(app_EDITOR_FILER, EF_FILER);
@@ -160,12 +160,11 @@ flf_d_printf("<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 
 flf_d_printf(">>>>>>>>>>>>>>>>>>>>>>>>>\n");
 flf_d_printf("push_win:%d, list_mode:%d --> ret: %d\n", push_win, list_mode, ret);
-	filer_do_next = EF_NONE;	// for caller of do_call_filer(), clear "filer_do_next"
 
 	if (push_win) {
-		// propagate the current directory to the parent filer
-/////flf_d_printf("EF_CUR_DIR_CHANGED: %d\n", filer_do_next == EF_CUR_DIR_CHANGED);
-		pop_app_win(0, 1);		// always copy back the current directory to caller
+		// editor: refrect the callee's cur-buf to the caller's cur-buf if file loaded additionaly
+		// filer : does not propagate the current directory to the parent filer
+		pop_app_win_stk(ret == EF_LOADED, 0);	// always copy back the current directory to caller
 		disp_status_bar_done(_("Cur dir changed: %s"),
 		 get_cur_filer_view(get_filer_cur_pane_idx())->cur_dir);
 
@@ -174,6 +173,8 @@ flf_d_printf("[0].cur_dir: [%s]\n", get_cur_filer_view(0)->cur_dir);
 flf_d_printf("[1].cur_dir: [%s]\n", get_cur_filer_view(1)->cur_dir);
 		update_screen_app(1, 1);
 	}
+
+	filer_do_next = EF_NONE;	// for caller of do_call_filer(), clear "filer_do_next"
 
 	return ret;
 }
@@ -448,7 +449,7 @@ int update_screen_filer(int status_bar, int refresh)
 }
 
 #define HHCMMCSS_BUF_LEN		(1+8)	// " 23:59:59"
-PRIVATE void disp_title_bar_filer(const char* path, const char* filter,
+PRIVATE void disp_title_bar_filer(const char* dir, const char* filter,
  int cur_idx, int files_selected, int files_total)
 {
 	char buffer[MAX_SCRN_LINE_BUF_LEN+1];
@@ -461,13 +462,16 @@ PRIVATE void disp_title_bar_filer(const char* path, const char* filter,
 	 tio_blank_line(0), main_win_get_columns());
 
 	//-------------------------------------------------------------------------
+	strlcpy__(buffer, dir, MAX_PATH_LEN);
+	add_last_slash_to_dir(buffer);		// /home/user/bin ==> /home/user/bin/, / ==> //
+	remove_redundant_slash(buffer);		// /home/user/bin/ ==> no change, // ==> /
 	char separator_char = indication_of_app_mode();
-	snprintf_(buf_path, MAX_SCRN_LINE_BUF_LEN, "%s%d%c%s/%s",
-	 root_notation(), get_filer_cur_pane_idx()+1, separator_char, path, filter);
+	snprintf_(buf_path, MAX_SCRN_LINE_BUF_LEN, "%s%d%c%s%s",
+	 root_notation(), get_filer_cur_pane_idx()+1, separator_char, buffer, filter);
 	if (GET_APPMD(app_LIST_MODE)) {
 		strcat_printf(buf_path, MAX_SCRN_LINE_BUF_LEN, "[%s]", get_str_app_mode());
 	}
-	if ((get_win_depth() == 0) && (strcmp(path, get_home_dir()) == 0)) {
+	if ((get_win_depth() == 0) && (strcmp(dir, get_home_dir()) == 0)) {
 		strcat_printf(buf_path, MAX_SCRN_LINE_BUF_LEN, "  [%s|%s]",
 		 get_at_host_name(), get_tty_name());
 	}

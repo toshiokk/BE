@@ -691,7 +691,7 @@ int dof_set_filter(void)
 {
 	char filter[MAX_PATH_LEN+1];
 	if (chk_inp_str_ret_val_editor(input_string_pos("", filter, MAX_PATH_LEN,
-	 HISTORY_TYPE_IDX_DIR,
+	 HISTORY_TYPE_IDX_SEARCH,
 	 _("Set file name filter:")))) {
 		return 0;
 	}

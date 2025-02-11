@@ -35,9 +35,9 @@ int do_call_editor(int push_win, int list_mode, be_buf_t *buf, char *str_buf, in
 	filer_panes_t next_fps;
 	if (push_win) {
 #ifdef ENABLE_FILER
-		push_app_win(&next_eps, buf, &next_fps);
+		push_app_win_stk(&next_eps, buf, &next_fps);
 #else // ENABLE_FILER
-		push_app_win(&next_eps, buf);
+		push_app_win_stk(&next_eps, buf);
 #endif // ENABLE_FILER
 	}
 
@@ -55,10 +55,13 @@ flf_d_printf("push_win:%d --> ret: %d\n", push_win, ret);
 	_mlc_check_count
 
 	if (push_win) {
-		// return the current buffer settings of newly loaded buffer as a current
-		pop_app_win(ret == EF_LOADED, 1);
+		// editor: refrect the callee's cur-buf to the caller's cur-buf if file loaded additionaly
+		// filer : does not propagate the current directory to the parent filer
+		pop_app_win_stk(ret == EF_LOADED, 0);
 		update_screen_app(1, 1);
 	}
+
+	editor_do_next = EF_NONE;
 
 	return ret;		// EF_...
 }
@@ -235,12 +238,12 @@ const char *get_clipboard_file_path()
 }
 int save_cut_buf_to_clipboard_file()
 {
-	return save_buf_to_file(CUT_BUFS_TOP_NODE, get_clipboard_file_path());
+	return save_buf_to_file(CUT_BUFS_TOP_BUF, get_clipboard_file_path());
 }
 
 int load_clipboard_into_cut_buf()
 {
-	return load_file_into_buf(CUT_BUFS_TOP_NODE, get_clipboard_file_path());
+	return load_file_into_buf(CUT_BUFS_TOP_BUF, get_clipboard_file_path());
 }
 
 int doe_read_clipboard_into_cur_char()
@@ -418,9 +421,9 @@ void clear_app_win_stack_entry(int depth)
 }
 
 #ifdef ENABLE_FILER
-void push_app_win(editor_panes_t *next_eps, be_buf_t *buf, filer_panes_t *next_fps)
+void push_app_win_stk(editor_panes_t *next_eps, be_buf_t *buf, filer_panes_t *next_fps)
 #else // ENABLE_FILER
-void push_app_win(editor_panes_t *next_eps, be_buf_t *buf)
+void push_app_win_stk(editor_panes_t *next_eps, be_buf_t *buf)
 #endif // ENABLE_FILER
 {
 	app_win_stack_entry *app_win_stk_ptr = get_app_win_stack_ptr(-1);
@@ -446,7 +449,7 @@ void push_app_win(editor_panes_t *next_eps, be_buf_t *buf)
 	// clear previous message displayed on the status bar
 	clear_app_win_stack_entry(-1);
 }
-void pop_app_win(BOOL change_parent_editor, BOOL change_parent_filer)
+void pop_app_win_stk(BOOL change_parent_editor, BOOL change_parent_filer)
 {
 	set_win_depth(dec_app_win_stack_depth());
 
@@ -463,6 +466,11 @@ void pop_app_win(BOOL change_parent_editor, BOOL change_parent_filer)
 #ifdef ENABLE_FILER
 	if (app_win_stk_ptr->filer_panes_save) {
 		if (change_parent_filer) {
+/////flf_d_printf("\n [%s] < [%s]\n [%s] < [%s]\n",
+///// app_win_stk_ptr->filer_panes_save->filer_views[0].cur_dir,
+///// get_cur_filer_panes()->filer_views[0].cur_dir,
+///// app_win_stk_ptr->filer_panes_save->filer_views[1].cur_dir,
+///// get_cur_filer_panes()->filer_views[1].cur_dir);
 			copy_filer_panes_cur_dir(app_win_stk_ptr->filer_panes_save, get_cur_filer_panes());
 			// not recover (change) caller's current directory
 		}

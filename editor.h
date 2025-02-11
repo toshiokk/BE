@@ -84,11 +84,11 @@ app_win_stack_entry *get_app_win_stack_ptr(int depth);
 void clear_app_win_stack_entry(int depth);
 
 #ifdef ENABLE_FILER
-void push_app_win(editor_panes_t *next_eps, be_buf_t *buf, filer_panes_t *next_fps);
+void push_app_win_stk(editor_panes_t *next_eps, be_buf_t *buf, filer_panes_t *next_fps);
 #else // ENABLE_FILER
-void push_app_win(editor_panes_t *next_eps, be_buf_t *buf);
+void push_app_win_stk(editor_panes_t *next_eps, be_buf_t *buf);
 #endif // ENABLE_FILER
-void pop_app_win(BOOL change_parent_editor, BOOL change_parent_filer);
+void pop_app_win_stk(BOOL change_parent_editor, BOOL change_parent_filer);
 void save_cur_app_state(int depth);
 void load_cur_app_state(int depth);
 

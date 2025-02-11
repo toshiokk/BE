@@ -132,6 +132,12 @@ PRIVATE int doe_cut_to_tail_(int delete0_cut1)
 	return 1;
 }
 
+int doe_clear_all_cut_bufs(void)
+{
+	clear_all_cut_bufs();
+	return 1;
+}
+
 int doe_tog_mark(void)
 {
 	if (IS_MARK_SET(CUR_EBUF_STATE(buf_CUT_MODE)) == 0) {

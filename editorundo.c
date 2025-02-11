@@ -37,9 +37,9 @@ be_buf_t *push_undo_buf(be_buf_t *buf)
 // pop ==> remove buffer from top of buffers
 be_buf_t *pop_undo_buf(void)
 {
-	if (IS_NODE_BOT_ANCH(UNDO_BUFS_TOP_NODE))
+	if (IS_NODE_BOT_ANCH(UNDO_BUFS_TOP_BUF))
 		return NULL;
-	return buf_unlink(UNDO_BUFS_TOP_NODE);
+	return buf_unlink(UNDO_BUFS_TOP_BUF);
 }
 be_buf_t *push_redo_buf(be_buf_t *buf)
 {
@@ -49,15 +49,15 @@ be_buf_t *push_redo_buf(be_buf_t *buf)
 }
 be_buf_t *pop_redo_buf(void)
 {
-	if (IS_NODE_BOT_ANCH(REDO_BUFS_TOP_NODE))
+	if (IS_NODE_BOT_ANCH(REDO_BUFS_TOP_BUF))
 		return NULL;
-	return buf_unlink(REDO_BUFS_TOP_NODE);
+	return buf_unlink(REDO_BUFS_TOP_BUF);
 }
 int delete_undo_redo_buf(be_buf_t *edit_buf)
 {
 	// delete undo, redo buffers related to edit_buf
-	return delete_do_buf(edit_buf, UNDO_BUFS_TOP_NODE)
-	 + delete_do_buf(edit_buf, REDO_BUFS_TOP_NODE);
+	return delete_do_buf(edit_buf, UNDO_BUFS_TOP_BUF)
+	 + delete_do_buf(edit_buf, REDO_BUFS_TOP_BUF);
 }
 int delete_do_buf(be_buf_t *edit_buf, be_buf_t *buf)
 {
@@ -174,7 +174,7 @@ void undo_save_after_change(void)
 		save_region_to_undo_buf();	// save the state after change
 		if (count_undo_bufs() >= 2) {
 			// compare buffer after change and buffer before change
-			if (buf_compare(UNDO_BUFS_TOP_NODE, NODE_NEXT(UNDO_BUFS_TOP_NODE)) == 0) {
+			if (buf_compare(UNDO_BUFS_TOP_BUF, NODE_NEXT(UNDO_BUFS_TOP_BUF)) == 0) {
 				// not changed, pop two buffer (pushed "after" and "before")
 				buf_free_node(pop_undo_buf());
 				buf_free_node(pop_undo_buf());
@@ -189,11 +189,11 @@ PRIVATE void save_region_to_undo_buf(void)
 	push_undo_buf(get_epc_buf());
 	for (be_line_t *line = NODE_NEXT(undo_min_line); line != undo_max_line;
 	 line = NODE_NEXT(line)) {
-		buf_append_line_to_bottom(UNDO_BUFS_TOP_NODE, line_create_copy(line));
-		buf_set_cur_line(UNDO_BUFS_TOP_NODE, line);
+		buf_append_line_to_bottom(UNDO_BUFS_TOP_BUF, line_create_copy(line));
+		buf_set_cur_line(UNDO_BUFS_TOP_BUF, line);
 	}
-	flf_d_printf("CLBI(0): %d\n", BUFV0_CLBI(UNDO_BUFS_TOP_NODE));
-	flf_d_printf("CLBI(1): %d\n", BUFV1_CLBI(UNDO_BUFS_TOP_NODE));
+	flf_d_printf("CLBI(0): %d\n", BUFV0_CLBI(UNDO_BUFS_TOP_BUF));
+	flf_d_printf("CLBI(1): %d\n", BUFV1_CLBI(UNDO_BUFS_TOP_BUF));
 }
 
 typedef enum /*undo0_redo1*/ {
@@ -309,11 +309,11 @@ PRIVATE be_line_t *insert_region_from_buf(be_line_t *edit_line, be_buf_t *buf)
 #ifdef ENABLE_DEBUG
 void dump_undo_bufs_lines(void)
 {
-	buf_dump_bufs_lines(UNDO_BUFS_TOP_NODE, "undo-bufs");
+	buf_dump_bufs_lines(UNDO_BUFS_TOP_BUF, "undo-bufs");
 }
 void dump_redo_bufs_lines(void)
 {
-	buf_dump_bufs_lines(REDO_BUFS_TOP_NODE, "redo-bufs");
+	buf_dump_bufs_lines(REDO_BUFS_TOP_BUF, "redo-bufs");
 }
 #endif // ENABLE_DEBUG
 

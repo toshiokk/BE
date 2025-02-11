@@ -700,9 +700,7 @@ char *skip_string_mutable(char *ptr)
 
 char *remove_line_tail_lf(char *line)
 {
-	int len;
-
-	len = LIM_MIN(0, (int)strlen(line) - 1);
+	int len = LIM_MIN(0, (int)strlen(line) - 1);
 	if (line[len] == '\n')
 		line[len] = '\0';
 	return line;

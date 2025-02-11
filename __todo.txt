@@ -5,16 +5,25 @@
 - ISSUE: to be improved or fixed problems
 - CRASH: crash
 
+- [x] BUG: switch_to_bot_buffer() at the bottom of buffer switches to edit-buffer
+- [x] cover all Fxx keys modified any conbination of modifier keys of S, C, M in the key key_seq_table
+  so that any key seq does not output a funny text such as "19;7~"
+- [d ] change directory by selecting from directory tree
+- [x] 250207 do switch_to_prev_buffer on the top of buffers ==> switch_to_prev_buffers
+- [x] 250207 do switch_to_next_buffer on the top of buffers ==> switch_to_next_buffers
+- [x] 250206 root directory is shown as "//"
+- [x] 250202 read file into current cursor position
+- [x] current buffer is not be switched to the newly loaded file
 - [x] open directory selecting from file open histotry "/file/opened.txt|1:2" in F09 and F10
-  - [x] update the current directory in the caller
+  - [x!!!] update the current directory in caller
 [x] switching policy of filer and editor
 switching filer and editor
-  -+- call_filer -+- input_string() -+-- call_editor (view-mode)--call_filer
-   |              |                  +-- call_filer (view-mode)
+  -+- call_filer -+- input_string() -+- call_editor (view-mode)--call_filer
+   |              |                  +- call_filer (view-mode)
    |              +- view_list()--call_editor (view-mode)
    |
-   +- call_editor -+- input_string() -+-- call_editor (view-mode)
-                   |                  +-- call_filer (view-mode)
+   +- call_editor -+- input_string() -+- call_editor (view-mode)
+                   |                  +- call_filer (view-mode)
                    +- view_list()--call_editor (view-mode)
                    +- call_filer
 

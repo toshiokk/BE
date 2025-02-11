@@ -43,7 +43,7 @@ void init_help_bufs(void)
 }
 be_buf_t *get_help_buf(int help_buf_idx)
 {
-	return buf_get_buf_by_idx(HELP_BUFS_TOP_NODE, help_buf_idx);
+	return buf_get_buf_by_idx(HELP_BUFS_TOP_BUF, help_buf_idx);
 }
 
 int doe_view_file_list(void)
@@ -165,7 +165,7 @@ PRIVATE void make_help_file_list(be_buf_t *cur_edit_buf)
 
 	buf_set_file_abs_path(get_epc_buf(), _("#List of Files currently loaded"));
 
-	for (be_buf_t *edit_buf = EDIT_BUFS_TOP_NODE; IS_NODE_INT(edit_buf);
+	for (be_buf_t *edit_buf = EDIT_BUFS_TOP_BUF; IS_NODE_INT(edit_buf);
 	 edit_buf = NODE_NEXT(edit_buf)) {
 		snprintf_(buffer, MAX_SCRN_LINE_BUF_LEN+1, "%-60s %-5s %s %s %04x",
 		 quote_file_path_static(edit_buf->abs_path_),

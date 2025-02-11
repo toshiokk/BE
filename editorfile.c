@@ -326,13 +326,18 @@ int doe_read_file_into_cur_buf(void)
 {
 	char file_pos_str[MAX_PATH_LEN+1];
 	memorize_cur_file_pos_null(file_pos_str);
+
 	doe_open_file_recursive(RECURS0);
 	if (get_files_loaded() < 0) {
 		return 0;
 	}
 	doe_select_all_lines();
 	doe_copy_text();
-	doe_close_file_ask();
+	if (check_cur_buf_modified() == 0) {
+		// close a buffer only when the buffer is not modified
+		doe_close_file_ask();
+	}
+
 	recall_file_pos_null(file_pos_str);
 	doe_paste_text_with_pop();
 	return 0;
@@ -341,13 +346,13 @@ int doe_read_file_into_cur_buf(void)
 //------------------------------------------------------------------------------
 int write_all_ask(int yes_no, close_after_save_t close)
 {
-	switch_epc_buf_to_top();
+	switch_epc_buf_to_top_buf();
 	while (is_epc_buf_valid()) {
 		if (write_file_ask(yes_no, close) < ANSWER_NONE) {
 			disp_status_bar_done(_("Cancelled"));
 			return -1;
 		}
-		if (switch_epc_buf_to_next(0, 0) == 0)
+		if (switch_epc_buf_to_next_buf(0, 0) == 0)
 			break;
 	}
 	disp_status_bar_done(_("All modified buffers are saved"));
@@ -355,10 +360,10 @@ int write_all_ask(int yes_no, close_after_save_t close)
 }
 int close_all_not_modified(void)
 {
-	switch_epc_buf_to_top();
+	switch_epc_buf_to_top_buf();
 	while (is_epc_buf_valid()) {
 		if (check_cur_buf_modified()) {
-			if (switch_epc_buf_to_next(0, 0) == 0) {
+			if (switch_epc_buf_to_next_buf(0, 0) == 0) {
 				break;
 			}
 		} else {
@@ -370,7 +375,7 @@ int close_all_not_modified(void)
 }
 int close_all(void)
 {
-	switch_epc_buf_to_top();
+	switch_epc_buf_to_top_buf();
 	while (free_cur_edit_buf()) {
 		// loop
 		tio_refresh();

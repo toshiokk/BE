@@ -169,7 +169,7 @@ func_key_list_t filer_func_key_table[] = {
  { EFNM_EXEC, "",                    "Filer Menu-5",
    {KNA,          KNA, KNA}, F_I(dof_menu_0), get_str_setting_none },
  { EFAM_EXEC, "Split pane",          "Split screen into panes",
-   {K_VERTB, K_BAKSL,  KNA}, F_I(dof_tog_panes), get_str_filer_panes },
+   {K_VERTB, K_M_VERTB, KNA}, F_I(dof_tog_panes), get_str_filer_panes },
  { EFAM_EXEC, "Switch pane",         "Switch filer pane",
    {K_TAB, K_M_TAB,    KNA}, F_I(dof_tog_panex), get_str_filer_panex },
  { EFAM_EXEC, "Refresh",             "Refresh filer screen",

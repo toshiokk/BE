@@ -56,8 +56,8 @@ extern be_bufss_t all_bufferss;
 // Edit buffers ---------------------------------------------------------------
 extern be_bufs_t edit_buffers;
 #define EDIT_BUFS_TOP_ANCH		NODES_TOP_ANCH(&edit_buffers)
-#define EDIT_BUFS_TOP_NODE		NODES_TOP_NODE(&edit_buffers)
-#define EDIT_BUFS_BOT_NODE		NODES_BOT_NODE(&edit_buffers)
+#define EDIT_BUFS_TOP_BUF		NODES_TOP_NODE(&edit_buffers)
+#define EDIT_BUFS_BOT_BUF		NODES_BOT_NODE(&edit_buffers)
 #define EDIT_BUFS_BOT_ANCH		NODES_BOT_ANCH(&edit_buffers)
 // current edit buffer --------------------------------------------------------
 #define CUR_EDIT_BUF_TOP_ANCH	NODES_TOP_ANCH(get_epc_buf())
@@ -108,43 +108,43 @@ extern be_bufs_t edit_buffers;
 // Cut buffers ----------------------------------------------------------------
 extern be_bufs_t cut_buffers;
 #define CUT_BUFS_TOP_ANCH		NODES_TOP_ANCH(&cut_buffers)
-#define CUT_BUFS_TOP_NODE		NODES_TOP_NODE(&cut_buffers)
-#define CUT_BUFS_BOT_NODE		NODES_BOT_NODE(&cut_buffers)
+#define CUT_BUFS_TOP_BUF		NODES_TOP_NODE(&cut_buffers)
+#define CUT_BUFS_BOT_BUF		NODES_BOT_NODE(&cut_buffers)
 #define CUT_BUFS_BOT_ANCH		NODES_BOT_ANCH(&cut_buffers)
 // current cut buffer ---------------------------------------------------------
-#define TOP_BUF_OF_CUT_BUFS		CUT_BUFS_TOP_NODE
-#define CUR_CUT_BUF_TOP_LINE	NODES_TOP_NODE(CUT_BUFS_TOP_NODE)	// (be_line_t*)
-#define CUR_CUT_BUF_BOT_ANCH	NODES_BOT_ANCH(CUT_BUFS_TOP_NODE)	// (be_line_t*)
+#define TOP_BUF_OF_CUT_BUFS		CUT_BUFS_TOP_BUF
+#define CUR_CUT_BUF_TOP_LINE	NODES_TOP_NODE(CUT_BUFS_TOP_BUF)	// (be_line_t*)
+#define CUR_CUT_BUF_BOT_ANCH	NODES_BOT_ANCH(CUT_BUFS_TOP_BUF)	// (be_line_t*)
 
 #ifdef ENABLE_HISTORY
 // History buffers ------------------------------------------------------------
 extern be_bufs_t history_buffers;
 #define HIST_BUFS_TOP_ANCH		NODES_TOP_ANCH(&history_buffers)
-#define HIST_BUFS_TOP_NODE		NODES_TOP_NODE(&history_buffers)
-#define HIST_BUFS_BOT_NODE		NODES_BOT_NODE(&history_buffers)
+#define HIST_BUFS_TOP_BUF		NODES_TOP_NODE(&history_buffers)
+#define HIST_BUFS_BOT_BUF		NODES_BOT_NODE(&history_buffers)
 #define HIST_BUFS_BOT_ANCH		NODES_BOT_ANCH(&history_buffers)
 #endif // ENABLE_HISTORY
 
 // Help buffers ---------------------------------------------------------------
 extern be_bufs_t help_buffers;
 #define HELP_BUFS_TOP_ANCH		NODES_TOP_ANCH(&help_buffers)
-#define HELP_BUFS_TOP_NODE		NODES_TOP_NODE(&help_buffers)
-#define HELP_BUFS_BOT_NODE		NODES_BOT_NODE(&help_buffers)
+#define HELP_BUFS_TOP_BUF		NODES_TOP_NODE(&help_buffers)
+#define HELP_BUFS_BOT_BUF		NODES_BOT_NODE(&help_buffers)
 #define HELP_BUFS_BOT_ANCH		NODES_BOT_ANCH(&help_buffers)
 
 #ifdef ENABLE_UNDO
 // Undo buffers ---------------------------------------------------------------
 extern be_bufs_t undo_buffers;
 #define UNDO_BUFS_TOP_ANCH		NODES_TOP_ANCH(&undo_buffers)
-#define UNDO_BUFS_TOP_NODE		NODES_TOP_NODE(&undo_buffers)
-#define UNDO_BUFS_BOT_NODE		NODES_BOT_NODE(&undo_buffers)
+#define UNDO_BUFS_TOP_BUF		NODES_TOP_NODE(&undo_buffers)
+#define UNDO_BUFS_BOT_BUF		NODES_BOT_NODE(&undo_buffers)
 #define UNDO_BUFS_BOT_ANCH		NODES_BOT_ANCH(&undo_buffers)
-#define CUR_UNDO_BUF_BOT_ANCH	NODES_BOT_ANCH(UNDO_BUFS_TOP_NODE)	// (be_line_t*)
+#define CUR_UNDO_BUF_BOT_ANCH	NODES_BOT_ANCH(UNDO_BUFS_TOP_BUF)	// (be_line_t*)
 // Redo buffers ---------------------------------------------------------------
 extern be_bufs_t redo_buffers;
 #define REDO_BUFS_TOP_ANCH		NODES_TOP_ANCH(&redo_buffers)
-#define REDO_BUFS_TOP_NODE		NODES_TOP_NODE(&redo_buffers)
-#define REDO_BUFS_BOT_NODE		NODES_BOT_NODE(&redo_buffers)
+#define REDO_BUFS_TOP_BUF		NODES_TOP_NODE(&redo_buffers)
+#define REDO_BUFS_BOT_BUF		NODES_BOT_NODE(&redo_buffers)
 #define REDO_BUFS_BOT_ANCH		NODES_BOT_ANCH(&redo_buffers)
 #endif // ENABLE_UNDO
 
@@ -180,7 +180,8 @@ be_buf_view_t *get_epc_buf_view(void);
 void set_epx_buf(int pane_idx, be_buf_t *buf);
 be_buf_t *get_epx_buf(int pane_idx);
 
-be_bufs_t *set_cur_buf_to_bufs(be_buf_t *buf);
+/////be_bufs_t *set_cur_buf_of_bufs(be_buf_t *buf);
+be_bufs_t* get_bufs_contains_buf(be_buf_t* buf);
 
 int is_epc_buf_modifiable();
 int is_epc_buf_saveable();
@@ -221,7 +222,7 @@ int pop__free_from_cut_buf(void);
 be_line_t *append_string_to_cur_cut_buf(const char *string);
 int count_cut_bufs(void);
 int count_cur_cut_buf_lines(void);
-void free_all_cut_bufs(void);
+void clear_all_cut_bufs(void);
 
 //------------------------------------------------------------------------------
 

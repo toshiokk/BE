@@ -435,6 +435,7 @@ int buf_count_bufs(be_buf_t *buf)
 be_buf_t *buf_make_buf_intermediate(be_buf_t *buf)
 {
 	if (IS_PTR_VALID(buf) && (IS_NODE_INT(buf) == 0)) {
+		// valid but not intermediate
 		if (IS_NODE_INT(NODE_PREV(buf))) {
 			buf = NODE_PREV(buf);
 		} else
@@ -520,24 +521,28 @@ be_bufs_t *bufs_free_all_bufs(be_bufs_t *bufs)
 
 be_bufs_t *bufs_get_bufs_contains_buf(be_bufs_t *bufs, be_buf_t *cur_buf)
 {
-	bufs = bufs_make_top_anchor(bufs);
-	for ( ; IS_PTR_VALID(bufs); bufs = NODE_NEXT(bufs)) {
-		for (be_buf_t *buf = NODES_TOP_ANCH(bufs); IS_PTR_VALID(buf); buf = NODE_NEXT(buf)) {
-			if (buf == cur_buf) {
-				return bufs;
+	if (cur_buf) {
+		bufs = bufs_make_top_anchor(bufs);
+		for ( ; IS_PTR_VALID(bufs); bufs = NODE_NEXT(bufs)) {
+			for (be_buf_t *buf = NODES_TOP_ANCH(bufs); IS_PTR_VALID(buf); buf = NODE_NEXT(buf)) {
+				if (buf == cur_buf) {
+					return bufs;
+				}
 			}
 		}
 	}
+	// not found in all buffers
 	return NULL;
 }
 void bufs_fix_cur_buf(be_bufs_t *bufs)
 {
 	be_bufs_t *buffs = bufs_get_bufs_contains_buf(bufs, bufs->cur_buf);
-	if (IS_PTR_NULL(buffs) || (IS_NODE_INT(buffs) == 0)) {
-		// 'bufs->cur_buf' is not valid
-		bufs->cur_buf = NODES_TOP_NODE(bufs);	// fix cur_buf
+	if (buffs != bufs) {
+		// `bufs->cur_buf` is not contained in `bufs`
+		// ==> This means `bufs->cur_buf` is not valid
+		bufs->cur_buf = NODES_TOP_NODE(bufs);	// fix `cur_buf`
 	}
-	buf_fix_cur_line(bufs->cur_buf);		// fix cur_line too
+	buf_fix_cur_line(bufs->cur_buf);		// fix `cur_line` too
 }
 
 int bufs_count_bufs(be_bufs_t *bufs)

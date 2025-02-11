@@ -153,27 +153,9 @@ int doe_open_files_in_buf(void)
 
 //------------------------------------------------------------------------------
 
-int doe_switch_to_top_buffer(void)
-{
-	if (switch_epc_buf_to_top() == 0) {
-		return 0;
-	}
-	post_cmd_processing(NULL, CURS_MOVE_HORIZ, LOCATE_CURS_NONE, UPDATE_SCRN_ALL_SOON);
-	disp_status_bar_done(_("Switched to the first buffer"));
-	return 1;
-}
-int doe_switch_to_bot_buffer(void)
-{
-	if (switch_epc_buf_to_bot() == 0) {
-		return 0;
-	}
-	post_cmd_processing(NULL, CURS_MOVE_HORIZ, LOCATE_CURS_NONE, UPDATE_SCRN_ALL_SOON);
-	disp_status_bar_done(_("Switched to the last buffer"));
-	return 1;
-}
 int doe_switch_to_prev_buffer(void)
 {
-	if (switch_epc_buf_to_prev(1, 0) == 0) {
+	if (switch_epc_buf_to_prev_buf(1, 0) == 0) {
 		disp_status_bar_warn(_("No previous buffer"));
 		return 0;
 	}
@@ -183,7 +165,7 @@ int doe_switch_to_prev_buffer(void)
 }
 int doe_switch_to_next_buffer(void)
 {
-	if (switch_epc_buf_to_next(1, 0) == 0) {
+	if (switch_epc_buf_to_next_buf(1, 0) == 0) {
 		disp_status_bar_warn(_("No next buffer"));
 		return 0;
 	}
@@ -191,10 +173,41 @@ int doe_switch_to_next_buffer(void)
 	disp_status_bar_done(_("Switched to the next buffer"));
 	return 1;
 }
+
+int doe_switch_to_top_buffer(void)
+{
+	if (IS_NODE_TOP_MOST(get_epc_buf()) || IS_NODE_BOT_OOL(get_epc_buf())) {
+		// already top of buffers
+		// ==> switch to the previous buffers
+		return doe_switch_to_prev_buffers();
+	}
+	if (switch_epc_buf_to_top_buf() == 0) {
+		return 0;
+	}
+	post_cmd_processing(NULL, CURS_MOVE_HORIZ, LOCATE_CURS_NONE, UPDATE_SCRN_ALL_SOON);
+	disp_status_bar_done(_("Switched to the first buffer"));
+	return 1;
+}
+int doe_switch_to_bot_buffer(void)
+{
+_D_(dump_editor_panes(get_cur_editor_panes()))
+	if (IS_NODE_BOT_MOST(get_epc_buf()) || IS_NODE_TOP_OOL(get_epc_buf())) {
+		// already bottom of buffers
+		// ==> switch to the next buffers
+		return doe_switch_to_next_buffers();
+	}
+	if (switch_epc_buf_to_bot_buf() == 0) {
+		return 0;
+	}
+_D_(dump_editor_panes(get_cur_editor_panes()))
+	post_cmd_processing(NULL, CURS_MOVE_HORIZ, LOCATE_CURS_NONE, UPDATE_SCRN_ALL_SOON);
+	disp_status_bar_done(_("Switched to the last buffer"));
+	return 1;
+}
 //------------------------------------------------------------------------------
 int doe_switch_to_prev_buffers(void)
 {
-	be_bufs_t *bufs = set_cur_buf_to_bufs(get_epc_buf());
+	be_bufs_t *bufs = get_bufs_contains_buf(get_epc_buf());
 	if (IS_PREV_NODE_INT(bufs) == 0) {
 		disp_status_bar_warn(_("No previous buffers"));
 		return 0;
@@ -207,7 +220,8 @@ int doe_switch_to_prev_buffers(void)
 }
 int doe_switch_to_next_buffers(void)
 {
-	be_bufs_t *bufs = set_cur_buf_to_bufs(get_epc_buf());
+_D_(dump_editor_panes(get_cur_editor_panes()))
+	be_bufs_t *bufs = get_bufs_contains_buf(get_epc_buf());
 	if (IS_NEXT_NODE_INT(bufs) == 0) {
 		disp_status_bar_warn(_("No next buffers"));
 		return 0;
@@ -215,7 +229,9 @@ int doe_switch_to_next_buffers(void)
 	bufs = NODE_NEXT(bufs);
 	bufs_fix_cur_buf(bufs);
 	set_epc_buf(bufs->cur_buf);
+_D_(dump_editor_panes(get_cur_editor_panes()))
 	disp_status_bar_done(_("Switched to the next buffers"));
+_D_(dump_editor_panes(get_cur_editor_panes()))
 	return 1;
 }
 //------------------------------------------------------------------------------
@@ -779,21 +795,21 @@ int switch_epc_buf_by_file_name(const char *file_name)
 	return 0;		// not found
 }
 
-int switch_epc_buf_to_top(void)
+int switch_epc_buf_to_top_buf(void)
 {
-	if (IS_NODE_ANCH(EDIT_BUFS_TOP_NODE))
-		return 0;
-	set_epc_buf(EDIT_BUFS_TOP_NODE);
+///	if (IS_NODE_ANCH(EDIT_BUFS_TOP_BUF))
+///		return 0;
+	set_epc_buf(NODES_TOP_NODE(get_bufs_contains_buf(get_epc_buf())));
 	return 1;
 }
-int switch_epc_buf_to_bot(void)
+int switch_epc_buf_to_bot_buf(void)
 {
-	if (IS_NODE_ANCH(EDIT_BUFS_BOT_NODE))
-		return 0;
-	set_epc_buf(EDIT_BUFS_BOT_NODE);
+///	if (IS_NODE_ANCH(get_epc_buf()))
+///		return 0;
+	set_epc_buf(NODES_BOT_NODE(get_bufs_contains_buf(get_epc_buf())));
 	return 1;
 }
-int switch_epc_buf_to_prev(int beep_at_end, int goto_bottom)
+int switch_epc_buf_to_prev_buf(int beep_at_end, int goto_bottom)
 {
 	if (IS_NODE_TOP_MOST(get_epc_buf())) {
 		if (beep_at_end)
@@ -804,9 +820,9 @@ int switch_epc_buf_to_prev(int beep_at_end, int goto_bottom)
 	if (goto_bottom) {
 		last_line();
 	}
-	return 1;
+	return 1;		// switched
 }
-int switch_epc_buf_to_next(int beep_at_end, int goto_top)
+int switch_epc_buf_to_next_buf(int beep_at_end, int goto_top)
 {
 	if (IS_NODE_BOT_MOST(get_epc_buf())) {
 		if (beep_at_end)
@@ -817,12 +833,12 @@ int switch_epc_buf_to_next(int beep_at_end, int goto_top)
 	if (goto_top) {
 		first_line();
 	}
-	return 1;
+	return 1;		// switched
 }
 int switch_epc_buf_to_another_buf(void)
 {
-	if (switch_epc_buf_to_next(0, 0) == 0) {
-		if (switch_epc_buf_to_prev(0, 0) == 0) {
+	if (switch_epc_buf_to_next_buf(0, 0) == 0) {
+		if (switch_epc_buf_to_prev_buf(0, 0) == 0) {
 			set_epc_buf(buf_get_another_buf(get_epc_buf()));
 			return 0;
 		}

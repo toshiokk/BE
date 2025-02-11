@@ -206,7 +206,7 @@ void init_cur_editor_panes(editor_panes_t *eps, be_buf_t *buf)
 	if (prev_eps == NULL) {
 		// No prev_eps, this means 'eps' is the root view. set default initial values.
 		for (int pane_idx = 0; pane_idx < EDITOR_PANES; pane_idx++) {
-			set_epx_buf(pane_idx, EDIT_BUFS_TOP_NODE);
+			set_epx_buf(pane_idx, EDIT_BUFS_TOP_BUF);
 		}
 		set_editor_cur_pane_idx(0);
 	} else {
@@ -259,14 +259,19 @@ be_buf_t *get_epx_buf(int pane_idx)
 	return cur_editor_panes->bufs[pane_idx];
 }
 
-be_bufs_t *set_cur_buf_to_bufs(be_buf_t *buf)
+/////be_bufs_t *set_cur_buf_of_bufs(be_buf_t *buf)
+/////{
+/////	buf = buf_make_buf_intermediate(buf);
+/////	be_bufs_t *bufs = get_bufs_contains_buf(buf);
+/////	if (IS_NODE_INT(bufs)) {
+/////		bufs->cur_buf = buf;	// set as a current buffer of buffers
+/////	}
+/////	return bufs;
+/////}
+
+be_bufs_t* get_bufs_contains_buf(be_buf_t* buf)
 {
-	buf = buf_make_buf_intermediate(buf);
-	be_bufs_t *bufs = bufs_get_bufs_contains_buf(NODES_TOP_ANCH(&all_bufferss), buf);
-	if (IS_NODE_INT(bufs)) {
-		bufs->cur_buf = buf;	// set as a current buffer of buffers
-	}
-	return bufs;
+	return bufs_get_bufs_contains_buf(NODES_TOP_ANCH(&all_bufferss), buf);
 }
 
 // read-only : file itself has no write permission
@@ -371,11 +376,11 @@ void dump_buf_view_x(be_buf_t *buf, int pane_idx)
 
 be_buf_t *get_edit_buf_by_file_path(const char *abs_path)
 {
-	return buf_get_buf_by_file_path(EDIT_BUFS_TOP_NODE, abs_path);
+	return buf_get_buf_by_file_path(EDIT_BUFS_TOP_BUF, abs_path);
 }
 be_buf_t *get_edit_buf_by_file_name(const char *file_name)
 {
-	return buf_get_buf_by_file_name(EDIT_BUFS_TOP_NODE, file_name);
+	return buf_get_buf_by_file_name(EDIT_BUFS_TOP_BUF, file_name);
 }
 
 //------------------------------------------------------------------------------
@@ -466,7 +471,7 @@ int count_cur_cut_buf_lines(void)
 {
 	return buf_count_lines(TOP_BUF_OF_CUT_BUFS, MAX_LINES_LOADABLE);
 }
-void free_all_cut_bufs(void)
+void clear_all_cut_bufs(void)
 {
 	while (IS_NODE_INT(TOP_BUF_OF_CUT_BUFS)) {
 		pop__free_from_cut_buf();
@@ -515,7 +520,7 @@ void set_cur_buf_modified(void)
 }
 int is_any_edit_buf_modified(void)
 {
-	for (be_buf_t *edit_buf = EDIT_BUFS_TOP_NODE; IS_NODE_INT(edit_buf);
+	for (be_buf_t *edit_buf = EDIT_BUFS_TOP_BUF; IS_NODE_INT(edit_buf);
 	 edit_buf = NODE_NEXT(edit_buf)) {
 		if (BUF_STATE(edit_buf, buf_MODIFIED)) {
 			return 1;
@@ -780,19 +785,19 @@ void dump_cur_edit_buf_lines(void)
 }
 void dump_edit_bufs(void)
 {
-	buf_dump_bufs(EDIT_BUFS_TOP_NODE);
+	buf_dump_bufs(EDIT_BUFS_TOP_BUF);
 }
 void dump_edit_bufs_lines(void)
 {
-	buf_dump_bufs_lines(EDIT_BUFS_TOP_NODE, "edit-bufs");
+	buf_dump_bufs_lines(EDIT_BUFS_TOP_BUF, "edit-bufs");
 }
 void dump_cut_bufs(void)
 {
-	buf_dump_bufs(CUT_BUFS_TOP_NODE);
+	buf_dump_bufs(CUT_BUFS_TOP_BUF);
 }
 void dump_cut_bufs_lines(void)
 {
-	buf_dump_bufs_lines(CUT_BUFS_TOP_NODE, "cut-bufs");
+	buf_dump_bufs_lines(CUT_BUFS_TOP_BUF, "cut-bufs");
 }
 
 // dump current buffer
