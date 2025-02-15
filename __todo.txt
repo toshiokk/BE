@@ -290,7 +290,6 @@ The seamless text copying:
 [x] arrange ENABLE_FILER and ENABLE_HISTORY sections
 [x] can not open recursively from __be_test.pro and __be_test2.pro --> K_M_E (load-from-history)
 [x] tag-jump goes to line-1
-    editorgoto.c:322:13: error: invalid storage class for function ‘load_files_in_string_’
 [x] 0 length file --> 1 file loaded
 [x] testfiles --> change cur-dir to be/testfiles
    [x] (based on the directory of current file)

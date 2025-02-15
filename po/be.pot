@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-11 18:29+0900\n"
+"POT-Creation-Date: 2025-02-15 15:04+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -151,62 +151,62 @@ msgstr ""
 msgid "Cut-buffer empty !!"
 msgstr ""
 
-#: ../editorfile.c:47
+#: ../editorfile.c:46
 msgid "Open existing file:"
 msgstr ""
 
-#: ../editorfile.c:66 ../filercmd.c:238
+#: ../editorfile.c:65 ../filercmd.c:238
 msgid "Open new file:"
 msgstr ""
 
-#: ../editorfile.c:130
+#: ../editorfile.c:129
 msgid "No project file found"
 msgstr ""
 
-#: ../editorfile.c:173
+#: ../editorfile.c:172
 msgid "Buffer is modified, Are you OK to reopen file ?"
 msgstr ""
 
-#: ../editorfile.c:196
+#: ../editorfile.c:195
 msgid "File re-loaded"
 msgstr ""
 
-#: ../editorfile.c:222 ../editorfile.c:352 ../editorfile.c:415
-#: ../editorfile.c:421 ../editorgoto.c:50 ../winin.c:78
+#: ../editorfile.c:221 ../editorfile.c:351 ../editorfile.c:414
+#: ../editorfile.c:420 ../editorgoto.c:50 ../winin.c:78
 msgid "Cancelled"
 msgstr ""
 
-#: ../editorfile.c:250
+#: ../editorfile.c:249
 #, c-format
 msgid "Written to the file: %s"
 msgstr ""
 
-#: ../editorfile.c:301
+#: ../editorfile.c:300
 msgid "One buffer closed"
 msgstr ""
 
-#: ../editorfile.c:358
+#: ../editorfile.c:357
 msgid "All modified buffers are saved"
 msgstr ""
 
-#: ../editorfile.c:397
+#: ../editorfile.c:396
 msgid "This buffer is NOT saveable"
 msgstr ""
 
 #. saveable but not modified
-#: ../editorfile.c:402
+#: ../editorfile.c:401
 msgid "This buffer is NOT modified"
 msgstr ""
 
-#: ../editorfile.c:412
+#: ../editorfile.c:411
 msgid "Save modified buffer ?"
 msgstr ""
 
-#: ../editorfile.c:413
+#: ../editorfile.c:412
 msgid "Save modified buffer (ANSWERING \"No\" WILL DISCARD CHANGES) ?"
 msgstr ""
 
-#: ../editorfile.c:424
+#: ../editorfile.c:423
 msgid "Buffer saved to file"
 msgstr ""
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: be 0.500\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-11 18:29+0900\n"
+"POT-Creation-Date: 2025-02-15 15:04+0900\n"
 "PO-Revision-Date: 2006-11-04 22:00+0900\n"
 "Last-Translator: Toshio Koike <toshiokk@hotmail.com>\n"
 "Language-Team: ja <toshiokk@hotmail.com>\n"
@@ -160,65 +160,65 @@ msgstr "テキストを張り付けました(カットバッファは変化な�
 msgid "Cut-buffer empty !!"
 msgstr "カットバッファが空です !!"
 
-#: ../editorfile.c:47
+#: ../editorfile.c:46
 msgid "Open existing file:"
 msgstr "既存ファイルを開く:"
 
-#: ../editorfile.c:66 ../filercmd.c:238
+#: ../editorfile.c:65 ../filercmd.c:238
 msgid "Open new file:"
 msgstr "新しいファイルを開く:"
 
-#: ../editorfile.c:130
+#: ../editorfile.c:129
 msgid "No project file found"
 msgstr "プロジェクトファイルが見つかりません"
 
-#: ../editorfile.c:173
+#: ../editorfile.c:172
 msgid "Buffer is modified, Are you OK to reopen file ?"
 msgstr "バッファは変更されています。再オープンしますか ?"
 
-#: ../editorfile.c:196
+#: ../editorfile.c:195
 msgid "File re-loaded"
 msgstr "ファイルを開き直しました"
 
-#: ../editorfile.c:222 ../editorfile.c:352 ../editorfile.c:415
-#: ../editorfile.c:421 ../editorgoto.c:50 ../winin.c:78
+#: ../editorfile.c:221 ../editorfile.c:351 ../editorfile.c:414
+#: ../editorfile.c:420 ../editorgoto.c:50 ../winin.c:78
 msgid "Cancelled"
 msgstr "キャンセルされました"
 
-#: ../editorfile.c:250
+#: ../editorfile.c:249
 #, c-format
 msgid "Written to the file: %s"
 msgstr "ファイルに書き込みました: %s"
 
-#: ../editorfile.c:301
+#: ../editorfile.c:300
 msgid "One buffer closed"
 msgstr "1 バッファを閉じました"
 
-#: ../editorfile.c:358
+#: ../editorfile.c:357
 #, fuzzy
 msgid "All modified buffers are saved"
 msgstr "全変更ファイルを保存しました"
 
-#: ../editorfile.c:397
+#: ../editorfile.c:396
 #, fuzzy
 msgid "This buffer is NOT saveable"
 msgstr "バッファは保存できません"
 
 #. saveable but not modified
-#: ../editorfile.c:402
+#: ../editorfile.c:401
 #, fuzzy
 msgid "This buffer is NOT modified"
 msgstr "バッファは変更されていません"
 
-#: ../editorfile.c:412
+#: ../editorfile.c:411
 msgid "Save modified buffer ?"
 msgstr "変更されたバッファを保存しますか ?"
 
-#: ../editorfile.c:413
+#: ../editorfile.c:412
 msgid "Save modified buffer (ANSWERING \"No\" WILL DISCARD CHANGES) ?"
 msgstr "変更されたバッファを保存しますか (\"いいえ\" で変更は破棄されます) ?"
 
-#: ../editorfile.c:424
+#: ../editorfile.c:423
 msgid "Buffer saved to file"
 msgstr "バッファを保存しました"
 

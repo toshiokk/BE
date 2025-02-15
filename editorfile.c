@@ -21,27 +21,26 @@
 
 #include "headers.h"
 
-PRIVATE int doe_open_file_recursive(int flags);
+PRIVATE int open_file_recursive(int flags);
 int doe_open_file(void)
 {
-	return doe_open_file_recursive(WRP0 | FOL0 | RECURS1);
+	return open_file_recursive(WRP0 | FOL0 | RECURS1);
 }
 int doe_open_file_ro(void)
 {
-	return doe_open_file_recursive(WRP1 | FOL0 | RECURS1);
+	return open_file_recursive(WRP1 | FOL0 | RECURS1);
 }
 int doe_open_locked_file(void)
 {
-	return doe_open_file_recursive(WRP0 | FOL1 | RECURS1);
+	return open_file_recursive(WRP0 | FOL1 | RECURS1);
 }
-PRIVATE int doe_open_file_recursive(int flags)
+PRIVATE int open_file_recursive(int flags)
 {
-	char file_path[MAX_PATH_LEN+1];
-
 	clear_files_loaded();
-#ifdef ENABLE_FILER
-	do_call_filer(1, APP_MODE_NORMAL, "", file_path, file_path, MAX_PATH_LEN);
-#else // ENABLE_FILER
+	char file_path[MAX_PATH_LEN+1];
+///#ifdef ENABLE_FILER
+///	do_call_filer(1, APP_MODE_NORMAL, "", file_path, file_path, MAX_PATH_LEN);
+///#else // ENABLE_FILER
 	if (chk_inp_str_ret_val_editor(input_string_pos("", file_path, MAX_PATH_LEN,
 	 HISTORY_TYPE_IDX_FILE,
 	 _("Open existing file:")))) {
@@ -49,11 +48,11 @@ PRIVATE int doe_open_file_recursive(int flags)
 	}
 	// CURDIR: changed in editor
 	if (load_files_in_string(file_path,
-	 TUL0 | OOE0 | MOE1 | LFH0 | (flags & (WRP1 | FOL1 | RECURS1))) >= 0) {
+	 TUL0 | OOE0 | MOE1 | LFH0 | (flags & (WRP1 | FOL1 | RECURS1))) < 0) {
 		tio_beep();
 		return 0;
 	}
-#endif // ENABLE_FILER
+///#endif // ENABLE_FILER
 	disp_files_loaded_if_ge_0();
 	post_cmd_processing(NULL, CURS_MOVE_HORIZ, LOCATE_CURS_NONE, UPDATE_SCRN_ALL_SOON);
 	return 0;
@@ -327,7 +326,7 @@ int doe_read_file_into_cur_buf(void)
 	char file_pos_str[MAX_PATH_LEN+1];
 	memorize_cur_file_pos_null(file_pos_str);
 
-	doe_open_file_recursive(RECURS0);
+	open_file_recursive(RECURS0);
 	if (get_files_loaded() < 0) {
 		return 0;
 	}
